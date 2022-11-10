@@ -23,37 +23,35 @@ services:
         networks:
             - sail
         depends_on:
-            - mysql
+            - postgres
             - redis
             - meilisearch
             - mailhog
             - selenium
-    mysql:
-        image: 'mysql/mysql-server:8.0'
-        ports:
-            - '${FORWARD_DB_PORT:-3306}:3306'
-        environment:
-            MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
-            MYSQL_ROOT_HOST: "%"
-            MYSQL_DATABASE: '${DB_DATABASE}'
-            MYSQL_USER: '${DB_USERNAME}'
-            MYSQL_PASSWORD: '${DB_PASSWORD}'
-            MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    postgres:
+        image: postgres:14
+        container_name: postgres
+        restart: always
         volumes:
-            - 'sail-mysql:/var/lib/mysql'
-            - './vendor/laravel/sail/database/mysql/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
+            - sailpostgres:/var/lib/postgresql/data
+        environment:
+            TZ: Asia/Seoul
+            # POSTGRES_USER: root
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: todo
+        ports:
+            - 5434:5432
         networks:
             - sail
-        healthcheck:
-            test: ["CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}"]
-            retries: 3
-            timeout: 5s
     redis:
-        image: 'redis:alpine'
-        ports:
-            - '${FORWARD_REDIS_PORT:-6379}:6379'
+        restart: always
+        image: redis:alpine
+        container_name: redis
+        command: ["redis-server", "--appendonly", "yes"]
         volumes:
-            - 'sail-redis:/data'
+            - sail-redis:/data
+        ports:
+            - 6380:6379
         networks:
             - sail
         healthcheck:
@@ -91,7 +89,7 @@ networks:
     sail:
         driver: bridge
 volumes:
-    sail-mysql:
+    sailpostgres:
         driver: local
     sail-redis:
         driver: local
