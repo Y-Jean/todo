@@ -1,0 +1,273 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Todo API",
+        "version": "0.1"
+    },
+    "servers": [
+        {
+            "url": "http://localhost",
+            "description": "로컬"
+        }
+    ],
+    "paths": {
+        "/api/v1/register": {
+            "post": {
+                "tags": [
+                    "회원가입"
+                ],
+                "summary": "회원가입",
+                "description": "이메일을 통한 회원가입",
+                "operationId": "d6bd719d212a86f75a0ff61091dbdf21",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "description": "(필수)사용자 이름",
+                                        "type": "string",
+                                        "example": "변백현"
+                                    },
+                                    "email": {
+                                        "description": "(필수)사용자 이메일",
+                                        "type": "string",
+                                        "example": "example@jiran.com"
+                                    },
+                                    "password": {
+                                        "description": "(필수)사용자 비밀번호",
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "todo1234!!"
+                                    },
+                                    "password_confirmation": {
+                                        "description": "(필수)사용자 비밀번호 확인",
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "todo1234!!"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "성공",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user_id": {
+                                            "description": "사용자 번호",
+                                            "type": "integer"
+                                        },
+                                        "token": {
+                                            "description": "JWT 토큰",
+                                            "type": "string"
+                                        },
+                                        "token_type": {
+                                            "description": "토큰 유형",
+                                            "type": "string"
+                                        },
+                                        "expired_in": {
+                                            "description": "토큰 만료시간",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "user_id": 1,
+                                    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJvZmZpY2V3YXZlLWFwaSIsImlhdCI6MTY2ODM5MDk3NSwiZXhwIjpudWxsLCJ1c2VyX2lkIjoxMSwiZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwibmFtZSI6ImplYW4ifQ.9M_yhzpY86QBg57yF3AfqxjfHkMPmps9ukzcNbfXEP0JLlM4dD5VDqm-HU1JHE0guWCAiCOIbUpm0nhccN5yPw",
+                                    "token_type": "Bearer",
+                                    "expired_in": 7200
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "이미 존재하는 사용자 이메일",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseAbort"
+                                }
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "성공",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "description": "성공 여부",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "result": "success"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/login": {
+            "post": {
+                "tags": [
+                    "로그인"
+                ],
+                "summary": "로그인",
+                "description": "이메일을 통한 로그인",
+                "operationId": "d7d51829be22c07b1dbdeca806fd4354",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "description": "(필수)사용자 이메일",
+                                        "type": "string",
+                                        "example": "example@jiran.com"
+                                    },
+                                    "password": {
+                                        "description": "(필수)사용자 비밀번호",
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "todo1234!!"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "성공",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user_id": {
+                                            "description": "사용자 번호",
+                                            "type": "integer"
+                                        },
+                                        "token": {
+                                            "description": "JWT 토큰",
+                                            "type": "string"
+                                        },
+                                        "token_type": {
+                                            "description": "토큰 유형",
+                                            "type": "string"
+                                        },
+                                        "expired_in": {
+                                            "description": "토큰 만료시간",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "user_id": 1,
+                                    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJvZmZpY2V3YXZlLWFwaSIsImlhdCI6MTY2ODM5MDk3NSwiZXhwIjpudWxsLCJ1c2VyX2lkIjoxMSwiZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwibmFtZSI6ImplYW4ifQ.9M_yhzpY86QBg57yF3AfqxjfHkMPmps9ukzcNbfXEP0JLlM4dD5VDqm-HU1JHE0guWCAiCOIbUpm0nhccN5yPw",
+                                    "token_type": "Bearer",
+                                    "expired_in": 7200
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "잘못된 요청",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseAbort"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/profile": {
+            "get": {
+                "tags": [
+                    "사용자"
+                ],
+                "summary": "사용자 프로필 조회",
+                "operationId": "0cdd3bb79e9babcbb021338ac0d0524e",
+                "responses": {
+                    "200": {
+                        "description": "성공",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "name": {
+                                            "description": "이름",
+                                            "type": "string"
+                                        },
+                                        "email": {
+                                            "description": "이메일",
+                                            "type": "string"
+                                        },
+                                        "status_message": {
+                                            "description": "상태메세지",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "name": "jean",
+                                    "email": "test@example.com",
+                                    "status_message": null
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "auth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "ResponseAbort": {
+                "description": "잘못된 요청",
+                "properties": {
+                    "message": {
+                        "description": "에러 메시지",
+                        "type": "string",
+                        "example": "잘못된 요청입니다."
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "로그인",
+            "description": "로그인/로그아웃/토큰갱신/프로필"
+        },
+        {
+            "name": "회원가입",
+            "description": "회원가입"
+        }
+    ]
+}

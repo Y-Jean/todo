@@ -13,6 +13,10 @@ return [
     |
     */
 
+    'name' => '사용자의 이름을 입력해주세요.',
+    'email' => '이메일을 정확히 입력해주세요.',
+    'password' => '1개 이상의 숫자, 1개 이상의 특수문자, 2개 이상의 문자로 된 비밀번호를 입력해주세요.',
+
     'accepted' => 'The :attribute must be accepted.',
     'accepted_if' => 'The :attribute must be accepted when :other is :value.',
     'active_url' => 'The :attribute is not a valid URL.',
