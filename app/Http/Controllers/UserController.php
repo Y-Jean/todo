@@ -14,7 +14,7 @@ class UserController extends Controller
     {
         $this->validate($request, [
             'email' => 'required|string|max:100|email',
-            'password' => 'required',
+            'password' => 'required|regex:/(?=.*\d{1,})(?=.*[~`!@#$%\^&*()-+=]{1,})(?=.*[a-zA-Z]{2,}).{8,16}$/',
         ], [
             'email.*' => __('validations.email'),
             'password.*' => __('validations.password'),
@@ -63,5 +63,10 @@ class UserController extends Controller
             'token_type' => 'Bearer',
             'expired_in' => env('SESSION_TIME', 1200),
         ]);
+    }
+
+    public function getProfile(Request $request)
+    {
+        return $request->get('user')->only(['name', 'email', 'status_message', 'last_login_at']);
     }
 }

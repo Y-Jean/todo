@@ -22,5 +22,10 @@ Route::group(
     ['prefix' => '{v}', 'where' => ['v' => 'v1|V1']],
     function () {
         Route::post('login', [UserController::class, 'login']);
+
+        Route::middleware(['jwt'])->group(function () {
+                Route::get('profile', [UserController::class, 'getProfile']);
+            }
+        );
     }
 );
