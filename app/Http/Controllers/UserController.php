@@ -8,8 +8,75 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * public @method login(Request $request) :: 로그인
+ * public @method getProfile(Request $request) :: 사용자 정보 조회
+ */
 class UserController extends Controller
 {
+    /**
+     * @OA\Post(
+     *      path="/api/v1/login",
+     *      tags={"로그인"},
+     *      summary="로그인",
+     *      description="이메일을 통한 로그인",
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="email",
+     *                  type="string",
+     *                  description="(필수)사용자 이메일",
+     *                  example="example@jiran.com"
+     *              ),
+     *              @OA\Property(
+     *                  property="password",
+     *                  type="string",
+     *                  format="password",
+     *                  description="(필수)사용자 비밀번호",
+     *                  example="todo1234!!"
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response="200",
+     *          description="성공",
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="user_id",
+     *                  type="integer",
+     *                  description="사용자 번호"
+     *              ),
+     *              @OA\Property(
+     *                  property="token",
+     *                  type="string",
+     *                  description="JWT 토큰"
+     *              ),
+     *              @OA\Property(
+     *                  property="token_type",
+     *                  type="string",
+     *                  description="토큰 유형"
+     *              ),
+     *              @OA\Property(
+     *                  property="expired_in",
+     *                  type="string",
+     *                  description="토큰 만료시간"
+     *              ),
+     *              example={
+     *                  "user_id": 1,
+     *                  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJvZmZpY2V3YXZlLWFwaSIsImlhdCI6MTY2ODM5MDk3NSwiZXhwIjpudWxsLCJ1c2VyX2lkIjoxMSwiZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwibmFtZSI6ImplYW4ifQ.9M_yhzpY86QBg57yF3AfqxjfHkMPmps9ukzcNbfXEP0JLlM4dD5VDqm-HU1JHE0guWCAiCOIbUpm0nhccN5yPw",
+     *                  "token_type": "Bearer",
+     *                  "expired_in": 7200
+     *              }
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response="403",
+     *          description="잘못된 요청",
+     *          @OA\JsonContent(ref="#/components/schemas/ResponseAbort")
+     *      )
+     * )
+     */
     public function login(Request $request)
     {
         $this->validate($request, [
@@ -65,8 +132,44 @@ class UserController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/v1/profile",
+     *     tags={"사용자"},
+     *     summary="사용자 프로필 조회",
+     *     security={
+     *         {"auth":{}}
+     *     },
+     *      @OA\Response(
+     *          response="200",
+     *          description="성공",
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="name",
+     *                  type="string",
+     *                  description="이름",
+     *              ),
+     *              @OA\Property(
+     *                  property="email",
+     *                  type="string",
+     *                  description="이메일",
+     *              ),
+     *              @OA\Property(
+     *                  property="status_message",
+     *                  type="string",
+     *                  description="상태메세지",
+     *              ),
+     *              example={
+     *                  "name": "jean",
+     *                  "email": "test@example.com",
+     *                  "status_message": null
+     *              }
+     *          )
+     *      )
+     * )
+     */
     public function getProfile(Request $request)
     {
-        return $request->get('user')->only(['name', 'email', 'status_message', 'last_login_at']);
+        return $request->get('user')->only(['name', 'email', 'status_message']);
     }
 }

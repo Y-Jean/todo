@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -21,11 +22,15 @@ use Illuminate\Support\Facades\Route;
 Route::group(
     ['prefix' => '{v}', 'where' => ['v' => 'v1|V1']],
     function () {
+        // 로그인
         Route::post('login', [UserController::class, 'login']);
 
+        // 회원가입
+        Route::post('register', [RegisterController::class, 'store']);
+
         Route::middleware(['jwt'])->group(function () {
-                Route::get('profile', [UserController::class, 'getProfile']);
-            }
-        );
+            // 사용자 프로필 조회
+            Route::get('profile', [UserController::class, 'getProfile']);
+        });
     }
 );
