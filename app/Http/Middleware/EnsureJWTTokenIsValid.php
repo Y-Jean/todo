@@ -3,10 +3,12 @@
 namespace App\Http\Middleware;
 
 use App\Models\User;
+use Carbon\Carbon;
 use Closure;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 class EnsureJWTTokenIsValid
@@ -27,22 +29,37 @@ class EnsureJWTTokenIsValid
 
         $publicKey = Storage::disk('local')->get(config('constants.jwt.KEY_PUBLIC'));
 
-        $data = explode('.', $token);
+        $explodedToken = explode('.', $token);
 
-        if (count($data) !== 3) {
+        if (count($explodedToken) !== 3) {
             abort(410, __('aborts.token_is_not_valid'));
         }
 
-        $jwtHeader = JWT::jsonDecode(JWT::urlsafeB64Decode($data[0]));
-        $decoded = JWT::decode($token, new Key($publicKey, $jwtHeader->alg));
+        $jwtHeader = JWT::jsonDecode(JWT::urlsafeB64Decode($explodedToken[0]));
+        $data = JWT::decode($token, new Key($publicKey, $jwtHeader->alg));
 
-        $user = User::where('email', $decoded->email)->find($decoded->user_id);
+        $user = User::where('email', $data->email)->find($data->user_id);
         if ($user === null) {
             abort(403, __('aborts.do_not_exist_user'));
         }
 
+        $key = sprintf(config('constants.cache.LOGIN_USER'), $user->id);
+
+        // 로그아웃된 사용자
+        if (!Cache::has($key)) {
+            abort(410, __('aborts.logout_user'));
+        }
+
+        // 다른 pc에서 로그인되서 새 토큰이 발행된 경우
+        if (Cache::get($key) !== $token) {
+            abort(410, __('aborts.login_another_browser'));
+        }
+
+        // 세션타임 갱신
+        Cache::put($key, $token, Carbon::now()->addMinutes(env('SESSION_MINUTES', 60)));
+
         $request->attributes->set('user', $user);
-        $request->attributes->set('decoded', $decoded);
+        $request->attributes->set('data', $data);
 
         return $next($request);
     }
