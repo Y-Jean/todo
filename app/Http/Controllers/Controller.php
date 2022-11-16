@@ -18,11 +18,15 @@ use Illuminate\Routing\Controller as BaseController;
  * )
  * @OA\Tag(
  *      name="로그인",
- *      description="로그인/로그아웃/토큰갱신/프로필"
+ *      description="로그인/로그아웃"
  * )
  * @OA\Tag(
  *      name="회원가입",
  *      description="회원가입"
+ * )
+ * @OA\Tag(
+ *      name="사용자",
+ *      description="사용자 정보"
  * )
  * @OA\Schema(
  *      schema="ResponseAbort",

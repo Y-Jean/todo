@@ -49,43 +49,6 @@ class RegisterController extends Controller
      *          )
      *      ),
      *      @OA\Response(
-     *          response="200",
-     *          description="성공",
-     *          @OA\JsonContent(
-     *              @OA\Property(
-     *                  property="user_id",
-     *                  type="integer",
-     *                  description="사용자 번호"
-     *              ),
-     *              @OA\Property(
-     *                  property="token",
-     *                  type="string",
-     *                  description="JWT 토큰"
-     *              ),
-     *              @OA\Property(
-     *                  property="token_type",
-     *                  type="string",
-     *                  description="토큰 유형"
-     *              ),
-     *              @OA\Property(
-     *                  property="expired_in",
-     *                  type="string",
-     *                  description="토큰 만료시간"
-     *              ),
-     *              example={
-     *                  "user_id": 1,
-     *                  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJvZmZpY2V3YXZlLWFwaSIsImlhdCI6MTY2ODM5MDk3NSwiZXhwIjpudWxsLCJ1c2VyX2lkIjoxMSwiZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwibmFtZSI6ImplYW4ifQ.9M_yhzpY86QBg57yF3AfqxjfHkMPmps9ukzcNbfXEP0JLlM4dD5VDqm-HU1JHE0guWCAiCOIbUpm0nhccN5yPw",
-     *                  "token_type": "Bearer",
-     *                  "expired_in": 7200
-     *              }
-     *          )
-     *      ),
-     *      @OA\Response(
-     *          response="403",
-     *          description="이미 존재하는 사용자 이메일",
-     *          @OA\JsonContent(ref="#/components/schemas/ResponseAbort")
-     *      ),
-     *      @OA\Response(
      *          response="201",
      *          description="성공",
      *          @OA\JsonContent(
@@ -98,6 +61,11 @@ class RegisterController extends Controller
      *                  "result": "success",
      *              }
      *          )
+     *      ),
+     *      @OA\Response(
+     *          response="403",
+     *          description="이미 존재하는 사용자 이메일",
+     *          @OA\JsonContent(ref="#/components/schemas/ResponseAbort")
      *      )
      * )
      */

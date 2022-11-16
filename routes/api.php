@@ -25,6 +25,9 @@ Route::group(
         // 로그인
         Route::post('login', [UserController::class, 'login']);
 
+        //로그아웃
+        Route::post('logout', [UserController::class, 'logout']);
+
         // 회원가입
         Route::post('register', [RegisterController::class, 'store']);
 

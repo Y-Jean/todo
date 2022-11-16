@@ -3,13 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Carbon\Carbon;
 use Firebase\JWT\JWT;
+use Firebase\JWT\KEY;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 /**
  * public @method login(Request $request) :: 로그인
+ * public @method logout(Request $request) :: 로그아웃
  * public @method getProfile(Request $request) :: 사용자 정보 조회
  */
 class UserController extends Controller
@@ -58,7 +62,7 @@ class UserController extends Controller
      *                  description="토큰 유형"
      *              ),
      *              @OA\Property(
-     *                  property="expired_in",
+     *                  property="expired_at",
      *                  type="string",
      *                  description="토큰 만료시간"
      *              ),
@@ -66,13 +70,13 @@ class UserController extends Controller
      *                  "user_id": 1,
      *                  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJvZmZpY2V3YXZlLWFwaSIsImlhdCI6MTY2ODM5MDk3NSwiZXhwIjpudWxsLCJ1c2VyX2lkIjoxMSwiZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwibmFtZSI6ImplYW4ifQ.9M_yhzpY86QBg57yF3AfqxjfHkMPmps9ukzcNbfXEP0JLlM4dD5VDqm-HU1JHE0guWCAiCOIbUpm0nhccN5yPw",
      *                  "token_type": "Bearer",
-     *                  "expired_in": 7200
+     *                  "expired_at": "2022-11-16 11:44:51"
      *              }
      *          )
      *      ),
      *      @OA\Response(
      *          response="403",
-     *          description="잘못된 요청",
+     *          description="유효하지 않은 요청",
      *          @OA\JsonContent(ref="#/components/schemas/ResponseAbort")
      *      )
      * )
@@ -103,6 +107,9 @@ class UserController extends Controller
             abort(403, __('aborts.do_not_match_password'));
         }
 
+        $user->last_login_at = Carbon::now();
+        $user->save();
+
         // 토큰발행
         $accessToken = '';
 
@@ -124,22 +131,74 @@ class UserController extends Controller
 
         $accessToken = JWT::encode($payload, $privateKey, $alg);
 
+        // 로그인 사용자 캐시에 저장
+        $expiredAt = Carbon::now()->addMinutes(env('SESSION_MINUTES', 60));
+        Cache::put(sprintf(config('constants.cache.LOGIN_USER'), $user->id), $accessToken, $expiredAt);
+
         return response()->json([
             'user_id' => $user->id,
             'token' => $accessToken,
             'token_type' => 'Bearer',
-            'expired_in' => env('SESSION_TIME', 1200),
+            'expired_at' => $expiredAt,
         ]);
     }
 
     /**
+     * @OA\Post(
+     *      path="/api/v1/logout",
+     *      tags={"로그인"},
+     *      summary="로그아웃",
+     *      description="로그아웃",
+     *      @OA\Response(
+     *          response="201",
+     *          description="성공",
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="result",
+     *                  type="string",
+     *                  description="성공 여부"
+     *              ),
+     *              example={
+     *                  "result": "success",
+     *              }
+     *          )
+     *      )
+     * )
+     */
+    public function logout(Request $request)
+    {
+        $token = $request->bearerToken();
+        if ($token !== null) {
+            $publicKey = Storage::disk('local')->get(config('constants.jwt.KEY_PUBLIC'));
+    
+            $explodedToken = explode('.', $token);
+            if (count($explodedToken) !== 3) {
+                abort(410, __('aborts.token_is_not_valid'));
+            }
+
+            $jwtHeader = JWT::jsonDecode(JWT::urlsafeB64Decode($explodedToken[0]));
+            $data = JWT::decode($token, new Key($publicKey, $jwtHeader->alg));
+
+            // 캐시 삭제
+            $key = sprintf(config('constants.cache.LOGIN_USER'), $data->user_id);
+            if (Cache::get($key) == $request->bearerToken()) {
+                Cache::forget($key);
+            }
+        }
+
+        return response()->json([
+            'result' => 'success'
+        ], 201);
+    }
+
+    /**
      * @OA\Get(
-     *     path="/api/v1/profile",
-     *     tags={"사용자"},
-     *     summary="사용자 프로필 조회",
-     *     security={
-     *         {"auth":{}}
-     *     },
+     *      path="/api/v1/profile",
+     *      tags={"사용자"},
+     *      summary="사용자 프로필 조회",
+     *      security={
+     *          {"auth":{}}
+     *      },
      *      @OA\Response(
      *          response="200",
      *          description="성공",

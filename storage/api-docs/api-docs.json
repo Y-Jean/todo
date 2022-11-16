@@ -54,50 +54,6 @@
                     }
                 },
                 "responses": {
-                    "200": {
-                        "description": "성공",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "user_id": {
-                                            "description": "사용자 번호",
-                                            "type": "integer"
-                                        },
-                                        "token": {
-                                            "description": "JWT 토큰",
-                                            "type": "string"
-                                        },
-                                        "token_type": {
-                                            "description": "토큰 유형",
-                                            "type": "string"
-                                        },
-                                        "expired_in": {
-                                            "description": "토큰 만료시간",
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
-                                },
-                                "example": {
-                                    "user_id": 1,
-                                    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJvZmZpY2V3YXZlLWFwaSIsImlhdCI6MTY2ODM5MDk3NSwiZXhwIjpudWxsLCJ1c2VyX2lkIjoxMSwiZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwibmFtZSI6ImplYW4ifQ.9M_yhzpY86QBg57yF3AfqxjfHkMPmps9ukzcNbfXEP0JLlM4dD5VDqm-HU1JHE0guWCAiCOIbUpm0nhccN5yPw",
-                                    "token_type": "Bearer",
-                                    "expired_in": 7200
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "이미 존재하는 사용자 이메일",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ResponseAbort"
-                                }
-                            }
-                        }
-                    },
                     "201": {
                         "description": "성공",
                         "content": {
@@ -113,6 +69,16 @@
                                 },
                                 "example": {
                                     "result": "success"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "이미 존재하는 사용자 이메일",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseAbort"
                                 }
                             }
                         }
@@ -170,7 +136,7 @@
                                             "description": "토큰 유형",
                                             "type": "string"
                                         },
-                                        "expired_in": {
+                                        "expired_at": {
                                             "description": "토큰 만료시간",
                                             "type": "string"
                                         }
@@ -181,17 +147,48 @@
                                     "user_id": 1,
                                     "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJvZmZpY2V3YXZlLWFwaSIsImlhdCI6MTY2ODM5MDk3NSwiZXhwIjpudWxsLCJ1c2VyX2lkIjoxMSwiZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwibmFtZSI6ImplYW4ifQ.9M_yhzpY86QBg57yF3AfqxjfHkMPmps9ukzcNbfXEP0JLlM4dD5VDqm-HU1JHE0guWCAiCOIbUpm0nhccN5yPw",
                                     "token_type": "Bearer",
-                                    "expired_in": 7200
+                                    "expired_at": "2022-11-16 11:44:51"
                                 }
                             }
                         }
                     },
                     "403": {
-                        "description": "잘못된 요청",
+                        "description": "유효하지 않은 요청",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ResponseAbort"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/logout": {
+            "post": {
+                "tags": [
+                    "로그인"
+                ],
+                "summary": "로그아웃",
+                "description": "로그아웃",
+                "operationId": "95c20f5153ad6cbd9a7de701fdef9493",
+                "responses": {
+                    "201": {
+                        "description": "성공",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "description": "성공 여부",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "result": "success"
                                 }
                             }
                         }
@@ -263,11 +260,15 @@
     "tags": [
         {
             "name": "로그인",
-            "description": "로그인/로그아웃/토큰갱신/프로필"
+            "description": "로그인/로그아웃"
         },
         {
             "name": "회원가입",
             "description": "회원가입"
+        },
+        {
+            "name": "사용자",
+            "description": "사용자 정보"
         }
     ]
 }
