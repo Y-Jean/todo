@@ -67,12 +67,13 @@ return new class () extends Migration {
         // 할일 테이블
         Schema::create('tasks', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name', 500)->comment('일정');
+            $table->string('name', 500)->default('')->comment('일정');
             $table->unsignedBigInteger('user_id')->comment('사용자번호');
             $table->unsignedBigInteger('tag_id')->nullable()->comment('태그번호');
             $table->boolean('done')->default(false)->comment('완료여부');
             $table->timestampTz('dead_line')->nullable()->comment('제한 시간');
             $table->timestampTz('complete_time')->nullable()->comment('완료시간');
+            $table->date('date')->comment('날짜');
 
             $table->timestampsTz();
             $table->softDeletesTz();
