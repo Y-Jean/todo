@@ -31,9 +31,13 @@ Route::group(
         // 회원가입
         Route::post('register', [RegisterController::class, 'store']);
 
+
         Route::middleware(['jwt'])->group(function () {
             // 사용자 프로필 조회
             Route::get('profile', [UserController::class, 'getProfile']);
+
+            // 회원탈퇴
+            Route::delete('withdrawal', [RegisterController::class, 'delete']);
         });
     }
 );

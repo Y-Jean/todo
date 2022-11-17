@@ -9,8 +9,8 @@ use Illuminate\Support\Facades\Hash;
 
 class User extends Authenticatable
 {
-    use SoftDeletes;
     use HasFactory;
+    use SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -36,14 +36,8 @@ class User extends Authenticatable
         'password'
     ];
 
-    // 패스워드 검증
-    public function verifyPassword($password)
+    public function tasks()
     {
-        // 비밀번호 체크
-        if (!Hash::check($password, $this->password)) {
-            return false;
-        }
-
-        return true;
+        return $this->hasMany(Task::class);
     }
 }

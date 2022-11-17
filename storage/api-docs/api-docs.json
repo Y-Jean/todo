@@ -86,6 +86,65 @@
                 }
             }
         },
+        "/api/v1/withdrawal": {
+            "delete": {
+                "tags": [
+                    "회원가입"
+                ],
+                "summary": "회원탈퇴",
+                "description": "탈퇴",
+                "operationId": "6e513a4df2a97cb098fe647207225f0a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "password": {
+                                        "description": "(필수)사용자 비밀번호",
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "todo1234!!"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "성공",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "description": "성공 여부",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "result": "success"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "비밀번호가 일치하지 않음",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseAbort"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/login": {
             "post": {
                 "tags": [

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 
 /**
@@ -97,6 +98,76 @@ class RegisterController extends Controller
             'email' => $email,
             'password' => Hash::make($password)
         ]);
+
+        return response()->json([
+            'result' => 'success'
+        ], 201);
+    }
+
+    /**
+     * @OA\Delete(
+     *      path="/api/v1/withdrawal",
+     *      tags={"회원가입"},
+     *      summary="회원탈퇴",
+     *      description="탈퇴",
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="password",
+     *                  type="string",
+     *                  format="password",
+     *                  description="(필수)사용자 비밀번호",
+     *                  example="todo1234!!"
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response="201",
+     *          description="성공",
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="result",
+     *                  type="string",
+     *                  description="성공 여부"
+     *              ),
+     *              example={
+     *                  "result": "success",
+     *              }
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response="403",
+     *          description="비밀번호가 일치하지 않음",
+     *          @OA\JsonContent(ref="#/components/schemas/ResponseAbort")
+     *      )
+     * )
+     */
+    public function delete(Request $request)
+    {
+        $this->validate($request, [
+            'password' => 'required'
+        ], [
+            'password.*' => __('validations.password')
+        ]);
+
+        // 현재 로그인된 사용자 정보
+        $user = $request->get('user');
+        $password = $request->input('password');
+
+        // 비밀번호가 일치하지 않을 경우 삭제 불가
+        if (!Hash::check($password, $user->password)) {
+            abort(403, __('aborts.do_not_match_password'));
+        }
+
+        // 사용자 삭제
+        User::where('id', $user->id)->delete();
+
+        // 캐시 삭제
+        $key = sprintf(config('constants.cache.LOGIN_USER'), $user->id);
+        if (Cache::has($key)) {
+            Cache::forget($key);
+        }
 
         return response()->json([
             'result' => 'success'
