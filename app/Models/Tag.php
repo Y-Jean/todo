@@ -6,20 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Task extends Model
+class Tag extends Model
 {
     use HasFactory;
     use SoftDeletes;
 
     protected $fillable = [
-        'contents',
+        'name',
         'user_id',
-        'done',
-    ];
-
-    protected $dates = [
-        'dead_line',
-        'complete_time'
+        'position',
     ];
 
     public function user()
