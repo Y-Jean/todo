@@ -145,6 +145,82 @@
                 }
             }
         },
+        "/api/v1/task": {
+            "post": {
+                "tags": [
+                    "일정"
+                ],
+                "summary": "일정 추가",
+                "description": "일정 추가",
+                "operationId": "d5d9ffeaed4535efe2bcf37868edba2d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "contents": {
+                                        "description": "(필수)일정",
+                                        "type": "string",
+                                        "example": "병원가기"
+                                    },
+                                    "date": {
+                                        "description": "(필수)날짜",
+                                        "type": "string",
+                                        "example": "2022-11-23"
+                                    },
+                                    "tag_ids": {
+                                        "description": "(선택)태그 번호(0~3개)",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer",
+                                            "example": "1"
+                                        }
+                                    },
+                                    "dead_line": {
+                                        "description": "(필수)완료 예정 시간",
+                                        "type": "string",
+                                        "example": "2022-11-23 16:30:00"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "성공",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "description": "성공 여부",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "result": "success"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "기타 오류",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseAbort"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/login": {
             "post": {
                 "tags": [
@@ -328,6 +404,10 @@
         {
             "name": "사용자",
             "description": "사용자 정보"
+        },
+        {
+            "name": "일정",
+            "description": "일정 관련 api"
         }
     ]
 }
