@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tag;
-use App\Models\TagsToTask;
+use App\Models\TagToTask;
 use App\Models\Task;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -119,7 +119,7 @@ class TaskController extends Controller
 
         if ($tags !== null) {
             $tags->each(function ($item) use ($user, $task) {
-                $tag_to_task = new TagsToTask();
+                $tag_to_task = new TagToTask();
                 $tag_to_task->tag_id = $item->id;
                 $tag_to_task->user_id = $user->id;
                 $tag_to_task->task_id = $task->id;
@@ -127,6 +127,45 @@ class TaskController extends Controller
                 $tag_to_task->save();
             });
         }
+
+        return response()->json([
+            'result' => 'success'
+        ], 201);
+    }
+
+    public function show(Request $request, $v, $task_id)
+    {
+        // 사용자 정보
+        $user = $request->get('user');
+
+        $task = Task::with('tagToTasks.tag')->where('user_id', $user->id)->find($task_id);
+
+        // 조회하려는 일정이 존재하지 않는 경우
+        if ($task === null) {
+            abort(403, __('aborts.do_not_exist_task'));
+        }
+
+        $task->tag = [];
+        if ($task->tagToTasks->isNotEmpty()) {
+            $task->tag = $task->tagToTasks->map(function ($item) {
+                // 태그가 없는 경우
+                if ($item->tag === null) {
+                    return ;
+                }
+
+                return $item->tag->only(['id', 'name', 'position', 'color']);
+            })->sortBy('position')->filter();
+        }
+
+        return $task->only(['id', 'contents', 'date', 'done', 'dead_line', 'complete_time', 'tag']);
+    }
+
+    public function delete(Request $request, $v, $task_id)
+    {
+        // 사용자 정보
+        $user = $request->get('user');
+
+        Task::where('user_id', $user->id)->delete($task_id);
 
         return response()->json([
             'result' => 'success'
