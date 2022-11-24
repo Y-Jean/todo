@@ -20,18 +20,18 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('tags_to_tasks', function (Blueprint $table) {
+        Schema::create('tag_to_tasks', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id')->comment('사용자번호');
-            $table->unsignedBigInteger('task_id')->nullable()->comment('할일번호');
-            $table->unsignedBigInteger('tag_id')->nullable()->comment('태그번호');
+            $table->unsignedBigInteger('task_id')->comment('할일번호');
+            $table->unsignedBigInteger('tag_id')->comment('태그번호');
 
             $table->timestampsTz();
             $table->softDeletesTz();
 
             $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreign('task_id')->references('id')->on('tasks')->onUpdate('cascade');
-            $table->foreign('tag_id')->references('id')->on('tags')->onUpdate('cascade');
+            $table->foreign('task_id')->references('id')->on('tasks')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('tag_id')->references('id')->on('tags')->onUpdate('cascade')->onDelete('cascade');
         });
 
         Schema::table('tags', function(Blueprint $table) {
@@ -60,6 +60,6 @@ return new class extends Migration
             $table->renameColumn('color', 'profile_image_id');
         });
 
-        Schema::dropIfExists('tags_to_tasks');
+        Schema::dropIfExists('tag_to_tasks');
     }
 };

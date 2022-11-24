@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -14,11 +15,17 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        \App\Models\User::factory(10)->create();
+        User::factory()->count(10)->create();
 
-        \App\Models\User::factory()->create([
+        User::factory()->create([
             'name' => 'jean',
             'email' => 'test@example.com',
         ]);
+
+        if (env('APP_ENV') === 'local' || env('APP_ENV') === 'testing') {
+            $this->call([
+                TagSeeder::class,
+            ]);
+        }
     }
 }
