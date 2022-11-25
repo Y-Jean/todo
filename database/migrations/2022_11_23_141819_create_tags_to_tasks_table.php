@@ -4,15 +4,14 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * The database connection that should be used by the migration.
      *
      * @var string
      */
     protected $connection = 'pgsql';
- 
+
     /**
      * Run the migrations.
      *
@@ -22,25 +21,20 @@ return new class extends Migration
     {
         Schema::create('tag_to_tasks', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('user_id')->comment('사용자번호');
-            $table->unsignedBigInteger('task_id')->comment('할일번호');
-            $table->unsignedBigInteger('tag_id')->comment('태그번호');
+            $table->foreignId('user_id')->comment('사용자번호')->constrained('users', 'id')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('task_id')->comment('일정번호')->constrained('tasks', 'id')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('tag_id')->comment('태그번호')->constrained('tags', 'id')->cascadeOnUpdate()->cascadeOnDelete();
 
             $table->timestampsTz();
             $table->softDeletesTz();
-
-            $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreign('task_id')->references('id')->on('tasks')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreign('tag_id')->references('id')->on('tags')->onUpdate('cascade')->onDelete('cascade');
         });
 
-        Schema::table('tags', function(Blueprint $table) {
+        Schema::table('tags', function (Blueprint $table) {
             $table->renameColumn('profile_image_id', 'color');
         });
 
-        Schema::table('tasks', function(Blueprint $table) {
+        Schema::table('tasks', function (Blueprint $table) {
             $table->renameColumn('name', 'contents');
-            $table->dropColumn('tag_id');
         });
     }
 
@@ -51,12 +45,11 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('tasks', function(Blueprint $table) {
-            $table->unsignedBigInteger('tag_id')->nullable()->comment('태그번호');
+        Schema::table('tasks', function (Blueprint $table) {
             $table->renameColumn('contents', 'name');
         });
 
-        Schema::table('tags', function(Blueprint $table) {
+        Schema::table('tags', function (Blueprint $table) {
             $table->renameColumn('color', 'profile_image_id');
         });
 

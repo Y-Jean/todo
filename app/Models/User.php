@@ -25,6 +25,7 @@ class User extends Authenticatable
 
     protected $dates = [
         'last_login_at',
+        'deleted_at'
     ];
 
     /**
@@ -44,5 +45,10 @@ class User extends Authenticatable
     public function tags()
     {
         return $this->hasMany(Tag::class);
+    }
+
+    public function tagToTasks()
+    {
+        return $this->hasMany(TagToTask::class);
     }
 }

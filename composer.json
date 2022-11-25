@@ -8,6 +8,7 @@
         "php": "^8.0.2",
         "darkaonline/l5-swagger": "^8.4",
         "doctrine/dbal": "^3.5",
+        "dyrynda/laravel-cascade-soft-deletes": "^4.2",
         "firebase/php-jwt": "^6.3",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^9.19",

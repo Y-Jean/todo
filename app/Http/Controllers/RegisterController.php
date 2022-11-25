@@ -161,7 +161,10 @@ class RegisterController extends Controller
         }
 
         // 사용자 삭제
-        User::where('id', $user->id)->delete();
+        $user = User::find($user->id);
+        if ($user !== null) {
+            $user->forcedelete();
+        }
 
         // 캐시 삭제
         $key = sprintf(config('constants.cache.LOGIN_USER'), $user->id);
