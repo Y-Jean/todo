@@ -6,6 +6,13 @@ use Illuminate\Support\Facades\Schema;
 
 return new class () extends Migration {
     /**
+     * The database connection that should be used by the migration.
+     *
+     * @var string
+     */
+    protected $connection = 'pgsql';
+
+    /**
      * Run the migrations.
      *
      * @return void
@@ -42,34 +49,29 @@ return new class () extends Migration {
         // options 테이블
         Schema::create('options', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('user_id')->comment('사용자번호');
+            $table->foreignId('user_id')->comment('사용자번호')->constrained('users')->cascadeOnUpdate()->cascadeOnDelete();
 
             $table->timestampsTz();
             $table->softDeletesTz();
-
-            $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
         });
 
         // tags 테이블
         Schema::create('tags', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('user_id')->comment('사용자번호');
+            $table->foreignId('user_id')->comment('사용자번호')->constrained('users')->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('name', 100)->comment('태그 명');
             $table->unsignedSmallInteger('position')->comment('표시순서');
             $table->string('profile_image_id', 10)->nullable()->comment('태그 RGB값');
 
             $table->timestampsTz();
             $table->softDeletesTz();
-
-            $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
         });
 
         // 할일 테이블
         Schema::create('tasks', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name', 500)->default('')->comment('일정');
-            $table->unsignedBigInteger('user_id')->comment('사용자번호');
-            $table->unsignedBigInteger('tag_id')->nullable()->comment('태그번호');
+            $table->foreignId('user_id')->comment('사용자번호')->constrained('users')->cascadeOnUpdate()->cascadeOnDelete();
             $table->boolean('done')->default(false)->comment('완료여부');
             $table->timestampTz('dead_line')->nullable()->comment('제한 시간');
             $table->timestampTz('complete_time')->nullable()->comment('완료시간');
@@ -77,20 +79,16 @@ return new class () extends Migration {
 
             $table->timestampsTz();
             $table->softDeletesTz();
-
-            $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
         });
 
         // download log 테이블
         Schema::create('download_logs', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('user_id')->comment('사용자번호');
+            $table->foreignId('user_id')->comment('사용자번호')->constrained('users')->cascadeOnUpdate()->cascadeOnDelete();
             $table->date('date')->nullable()->comment('기준일');
 
             $table->timestampsTz();
             $table->softDeletesTz();
-
-            $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

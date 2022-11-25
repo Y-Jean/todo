@@ -17,6 +17,8 @@ class TagToTask extends Model
         'tag_id',
     ];
 
+    protected $dates = ['deleted_at'];
+
     public function user()
     {
         return $this->belongsTo(User::class);
