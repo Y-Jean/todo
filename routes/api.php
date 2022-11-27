@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\TagController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -50,6 +51,22 @@ Route::group(
                 Route::get('/{task_id}', [TaskController::class, 'show'])->where('task_id', '[0-9]+');
                 // 일정 삭제
                 Route::delete('/{task_id}', [TaskController::class, 'destroy'])->where('task_id', '[0-9]+');
+            });
+
+            /**
+             * 태그 관련
+             */
+            Route::group(['prefix' => 'tag'], function () {
+                // 태그 추가
+                Route::post('/', [TagController::class, 'store']);
+                // 태그 수정
+                Route::patch('/{tag_id}', [TagController::class, 'edit'])->where('tag_id', '[0-9]+');
+                // 태그 리스트
+                Route::get('/', [TagController::class, 'index']);
+                // 태그 조회
+                Route::get('/{tag_id}', [TagController::class, 'show'])->where('tag_id', '[0-9]+');
+                // 태그 삭제
+                Route::delete('/{tag_id}', [TagController::class, 'destroy'])->where('tag_id', '[0-9]+');
             });
         });
     }
