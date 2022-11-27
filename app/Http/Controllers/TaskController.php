@@ -160,12 +160,15 @@ class TaskController extends Controller
         return $task->only(['id', 'contents', 'date', 'done', 'dead_line', 'complete_time', 'tag']);
     }
 
-    public function delete(Request $request, $v, $task_id)
+    public function destroy(Request $request, $v, $task_id)
     {
         // 사용자 정보
         $user = $request->get('user');
 
-        Task::where('user_id', $user->id)->delete($task_id);
+        $task = Task::where('user_id', $user->id)->find($task_id);
+        if ($task !== null) {
+            $task->delete();
+        }
 
         return response()->json([
             'result' => 'success'

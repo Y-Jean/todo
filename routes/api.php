@@ -46,16 +46,11 @@ Route::group(
             Route::group(['prefix' => 'task'], function () {
                 // 일정 추가
                 Route::post('/', [TaskController::class, 'store']);
-
                 // 일정 상세보기
                 Route::get('/{task_id}', [TaskController::class, 'show'])->where('task_id', '[0-9]+');
-
                 // 일정 삭제
-                Route::delete('/{task_id}', [TaskController::class, 'delete'])->where('task_id', '[0-9]+');
+                Route::delete('/{task_id}', [TaskController::class, 'destroy'])->where('task_id', '[0-9]+');
             });
-            
-
-
         });
     }
 );
