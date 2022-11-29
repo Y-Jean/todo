@@ -85,7 +85,7 @@ class TagController extends Controller
      * @param  int  $tag_id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Request $request, $v, $tag_id)
+    public function update(Request $request, $v, $tag_id)
     {
         $this->validate($request, [
             'name' => 'nullable|string',
