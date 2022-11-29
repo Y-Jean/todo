@@ -227,8 +227,78 @@ class UserController extends Controller
      *      )
      * )
      */
-    public function getProfile(Request $request)
+    public function show(Request $request)
     {
         return $request->get('user')->only(['name', 'email', 'status_message']);
+    }
+
+
+    public function update(Request $request)
+    {
+        $this->validate($request, [
+            'name' => 'nullable|string|max:100',
+            'status_message' => 'nullable|string|max:300',
+            'delete_status_message' => 'required|boolean',
+        ], [
+            '*' => __('validations.format')
+        ]);
+
+        // 사용자 정보
+        $user = $request->get('user');
+
+        $name = $request->input('name') ?? $user->name;
+        $statusMessage = $request->input('status_message') ?? $user->status_message;
+        $deleteMessage = filter_var($request->input('delete_status_message'), FILTER_VALIDATE_BOOLEAN);
+
+        // 상태메세지 삭제일 경우 입력받은 값이 있더라도 빈값으로 변경
+        if ($deleteMessage) {
+            $statusMessage = '';
+        }
+
+        User::whereId($user->id)->update([
+            'name' => $name,
+            'status_message' => $statusMessage
+        ]);
+
+        return response()->json([
+            'result' => 'success'
+        ], 201);
+    }
+
+
+    public function editPassword(Request $request)
+    {
+        $this->validate($request, [
+            'current_password' => 'required',
+            'new_password' => 'required|confirmed|regex:/(?=.*\d{1,})(?=.*[~`!@#$%\^&*()-+=]{1,})(?=.*[a-zA-Z]{2,}).{8,16}$/',
+            'new_password_confirmation' => 'required'
+        ], [
+            'new_password.*' => __('validations.password'),
+            '*' => __('validations.format')
+        ]);
+
+        // 사용자 정보
+        $user = $request->get('user');
+
+        $oldPassword = $request->input('current_password');
+        $password = $request->input('new_password');
+
+        // 비밀번호가 일치하지 않을 경우
+        if (!Hash::check($oldPassword, $user->password)){
+            abort(403, __('aborts.do_not_match_password'));
+        }
+
+        // 이전 비밀번호와 새 비밀번호가 같은 경우
+        if ($oldPassword === $password) {
+            abort(403, __('aborts.do_not_upsate_same_password'));
+        }
+
+        User::whereId($user->id)->update([
+            'password' => Hash::make($password)
+        ]);
+
+        return response()->json([
+            'result' => 'success'
+        ], 201);
     }
 }

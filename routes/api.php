@@ -35,11 +35,20 @@ Route::group(
 
 
         Route::middleware(['jwt'])->group(function () {
-            // 사용자 프로필 조회
-            Route::get('profile', [UserController::class, 'getProfile']);
-
             // 회원탈퇴
             Route::delete('withdrawal', [RegisterController::class, 'delete']);
+
+            /**
+             * 프로필 관련
+             */
+            Route::group(['prefix' => 'profile'], function () {
+                // 프로필 조회
+                Route::get('/', [UserController::class, 'show']);
+                // 프로필 수정
+                Route::put('/', [UserController::class, 'update']);
+                // 비밀번호 수정
+                Route::put('/password', [UserController::class, 'editPassword']);
+            });
 
             /**
              * 일정 관련
@@ -60,7 +69,7 @@ Route::group(
                 // 태그 추가
                 Route::post('/', [TagController::class, 'store']);
                 // 태그 수정
-                Route::patch('/{tag_id}', [TagController::class, 'edit'])->where('tag_id', '[0-9]+');
+                Route::put('/{tag_id}', [TagController::class, 'update'])->where('tag_id', '[0-9]+');
                 // 태그 리스트
                 Route::get('/', [TagController::class, 'index']);
                 // 태그 조회

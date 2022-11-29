@@ -26,7 +26,7 @@ return new class () extends Migration {
             $table->string('email')->comment('계정');
             $table->string('password')->nullable()->comment('비밀번호');
             $table->TinyInteger('fail_count')->default(0)->comment('로그인 실패횟수');
-            $table->string('status_message')->nullable()->comment('상태메시지');
+            $table->string('status_message')->default('')->comment('상태메시지');
             $table->timestampTz('last_login_at')->nullable()->comment('마지막 로그인 시간');
 
             $table->unique('email');
