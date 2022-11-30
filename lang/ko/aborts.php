@@ -10,5 +10,6 @@ return [
     'do_not_exist_contents' => '일정을 입력해주세요.',
     'too_much_tags' => '태그는 최대 3개까지 추가할 수 있습니다.',
     'do_not_exist_task' => '존재하지 않는 일정입니다.',
-    'do_not_upsate_same_password' => '현재 비밀번호와 같은 비밀번호로는 변경할 수 없습니다.'
+    'do_not_upsate_same_password' => '현재 비밀번호와 같은 비밀번호로는 변경할 수 없습니다.',
+    'do_not_exist_tag' => '존재하지 않는 태그입니다.',
 ];

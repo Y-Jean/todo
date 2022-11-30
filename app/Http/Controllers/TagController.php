@@ -8,6 +8,67 @@ use Illuminate\Http\Request;
 class TagController extends Controller
 {
     /**
+     * @OA\Get(
+     *      path="/api/v1/tags",
+     *      tags={"태그"},
+     *      summary="태그 리스트 조회",
+     *      description="태그 리스트 조회",
+     *      security={
+     *          {"auth":{}}
+     *      },
+     *      @OA\Response(
+     *          response="200",
+     *          description="성공",
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="tags",
+     *                  type="array",
+     *                  description="태그 리스트",
+     *                  @OA\Items(
+     *                      type="object",
+     *                      @OA\Property(
+     *                          property="id",
+     *                          type="integer",
+     *                          description="태그 번호"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="name",
+     *                          type="string",
+     *                          description="이름"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="position",
+     *                          type="integer",
+     *                          description="우선순위"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="color",
+     *                          type="string",
+     *                          description="hexColor"
+     *                      )
+     *                  )
+     *              ),
+     *              example={
+     *                  "tags": {
+     *                      {
+     *                          "id": 1,
+     *                          "name": "운동",
+     *                          "position": 0,
+     *                          "color": "#5ac7ca"
+     *                      },
+     *                      {
+     *                          "id": 2,
+     *                          "name": "독서",
+     *                          "position": 1,
+     *                          "color": "#111111"
+     *                      }
+     *                  }
+     *              }
+     *          )
+     *      )
+     * )
+     */
+    /**
      * Display a listing of the resource.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -18,11 +79,59 @@ class TagController extends Controller
         // 사용자 정보
         $user = $request->get('user');
 
-        return $user->tags()
+        $tags = $user->tags()
                     ->orderBy('position')
                     ->get(['id', 'name', 'position', 'color']);
+
+        return response()->json([
+            'tags' => $tags
+        ]);
     }
 
+    /**
+     * @OA\Post(
+     *      path="/api/v1/tags",
+     *      tags={"태그"},
+     *      summary="태그 생성",
+     *      description="새로운 태그 생성",
+     *      security={
+     *          {"auth":{}}
+     *      },
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="name",
+     *                  type="string",
+     *                  description="(필수)이름",
+     *                  example="공부"
+     *              )
+     *          ),
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="color",
+     *                  type="string",
+     *                  description="(선택)hexColor",
+     *                  example="#000000"
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response="201",
+     *          description="성공",
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="result",
+     *                  type="string",
+     *                  description="성공 여부"
+     *              ),
+     *              example={
+     *                  "result": "success",
+     *              }
+     *          )
+     *      )
+     * )
+     */
     /**
      * Store a newly created resource in storage.
      *
@@ -33,7 +142,6 @@ class TagController extends Controller
     {
         $this->validate($request, [
             'name' => 'required|string',
-            'position' => 'nullable|integer|min:0',
             'color' => [
                 'nullable',
                 'regex:/^#([a-f0-9]{6}|[a-f0-9]{3})$/i'
@@ -65,6 +173,63 @@ class TagController extends Controller
     }
 
     /**
+     * @OA\Get(
+     *      path="/api/v1/tags/{tag_id}",
+     *      tags={"태그"},
+     *      summary="태그 상세보기",
+     *      description="태그 개별 상세보기",
+     *      security={
+     *          {"auth":{}}
+     *      },
+     *      @OA\Parameter(
+     *          name="tag_id",
+     *          in="path",
+     *          description="태그 번호",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response="200",
+     *          description="성공",
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="id",
+     *                  type="string",
+     *                  description="태그 번호"
+     *              ),
+     *              @OA\Property(
+     *                  property="name",
+     *                  type="string",
+     *                  description="태그 이름"
+     *              ),
+     *              @OA\Property(
+     *                  property="position",
+     *                  type="integer",
+     *                  description="우선순위"
+     *              ),
+     *              @OA\Property(
+     *                  property="color",
+     *                  type="string",
+     *                  description="hexColor"
+     *              ),
+     *              example={
+     *                  "id": 1,
+     *                  "name": "운동",
+     *                  "position": 0,
+     *                  "color": "#5ac7ca"
+     *              }
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response="403",
+     *          description="태그가 존재하지 않음",
+     *          @OA\JsonContent(ref="#/components/schemas/ResponseAbort")
+     *      )
+     * )
+     */
+    /**
      * Display the specified resource.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -74,11 +239,82 @@ class TagController extends Controller
      */
     public function show(Request $request, $v, $tag_id)
     {
-        return Tag::find($tag_id)->only(['id', 'name', 'position', 'color']);
+        $tag = Tag::find($tag_id);
+        if ($tag === null) {
+            abort(403, __('aborts.do_not_exist_tag'));
+        }
+
+        return $tag->only(['id', 'name', 'position', 'color']);
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * @OA\Put(
+     *      path="/api/v1/tags/{tag_id}",
+     *      tags={"태그"},
+     *      summary="태그 수정",
+     *      description="기존 태그 수정",
+     *      security={
+     *          {"auth":{}}
+     *      },
+     *      @OA\Parameter(
+     *          name="tag_id",
+     *          in="path",
+     *          description="태그 번호",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="name",
+     *                  type="string",
+     *                  description="(선택)이름",
+     *                  example="공부"
+     *              )
+     *          ),
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="position",
+     *                  type="integer",
+     *                  description="(선택)우선순위",
+     *                  example=3
+     *              )
+     *          ),
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="color",
+     *                  type="string",
+     *                  description="(선택)hexColor",
+     *                  example="#000000"
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response="201",
+     *          description="성공",
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="result",
+     *                  type="string",
+     *                  description="성공 여부"
+     *              ),
+     *              example={
+     *                  "result": "success",
+     *              }
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response="403",
+     *          description="태그가 존재하지 않음",
+     *          @OA\JsonContent(ref="#/components/schemas/ResponseAbort")
+     *      )
+     * )
+     */
+    /**
+     * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $v
@@ -107,7 +343,7 @@ class TagController extends Controller
 
         $tag = Tag::where('user_id', $user->id)->find($tag_id);
         if ($tag === null) {
-            abort(403, __(''));
+            abort(403, __('aborts.do_not_exist_tag'));
         }
 
         $tag->name = $name !== null ? $name : $tag->name;
@@ -124,6 +360,40 @@ class TagController extends Controller
         ], 201);
     }
 
+    /**
+     * @OA\Delete(
+     *      path="/api/v1/tags/{tag_id}",
+     *      tags={"태그"},
+     *      summary="태그 삭제",
+     *      description="태그 개별 삭제",
+     *      security={
+     *          {"auth":{}}
+     *      },
+     *      @OA\Parameter(
+     *          name="tag_id",
+     *          in="path",
+     *          description="태그 번호",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response="201",
+     *          description="성공",
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="result",
+     *                  type="string",
+     *                  description="성공 여부"
+     *              ),
+     *              example={
+     *                  "result": "success",
+     *              }
+     *          )
+     *      )
+     * )
+     */
     /**
      * Remove the specified resource from storage.
      *

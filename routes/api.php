@@ -47,13 +47,13 @@ Route::group(
                 // 프로필 수정
                 Route::put('/', [UserController::class, 'update']);
                 // 비밀번호 수정
-                Route::put('/password', [UserController::class, 'editPassword']);
+                Route::put('/password', [UserController::class, 'updatePassword']);
             });
 
             /**
              * 일정 관련
              */
-            Route::group(['prefix' => 'task'], function () {
+            Route::group(['prefix' => 'tasks'], function () {
                 // 일정 추가
                 Route::post('/', [TaskController::class, 'store']);
                 // 일정 상세보기
@@ -65,7 +65,7 @@ Route::group(
             /**
              * 태그 관련
              */
-            Route::group(['prefix' => 'tag'], function () {
+            Route::group(['prefix' => 'tags'], function () {
                 // 태그 추가
                 Route::post('/', [TagController::class, 'store']);
                 // 태그 수정

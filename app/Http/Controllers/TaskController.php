@@ -15,10 +15,13 @@ class TaskController extends Controller
 {
     /**
      * @OA\Post(
-     *      path="/api/v1/task",
+     *      path="/api/v1/tasks",
      *      tags={"일정"},
-     *      summary="일정 추가",
-     *      description="일정 추가",
+     *      summary="일정 생성",
+     *      description="새로운 일정 생성",
+     *      security={
+     *          {"auth":{}}
+     *      },
      *      @OA\RequestBody(
      *          required=true,
      *          @OA\JsonContent(
@@ -133,6 +136,133 @@ class TaskController extends Controller
         ], 201);
     }
 
+    /**
+     * @OA\Get(
+     *      path="/api/v1/tasks/{task_id}",
+     *      tags={"일정"},
+     *      summary="일정 상세보기",
+     *      description="일정 개별 상세보기",
+     *      security={
+     *          {"auth":{}}
+     *      },
+     *      @OA\Parameter(
+     *          name="task_id",
+     *          in="path",
+     *          description="일정 번호",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response="200",
+     *          description="성공",
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="id",
+     *                  type="string",
+     *                  description="할일 번호"
+     *              ),
+     *              @OA\Property(
+     *                  property="contents",
+     *                  type="string",
+     *                  description="할일 내용"
+     *              ),
+     *              @OA\Property(
+     *                  property="date",
+     *                  type="string",
+     *                  description="날짜"
+     *              ),
+     *              @OA\Property(
+     *                  property="done",
+     *                  type="boolean",
+     *                  description="완료 여부"
+     *              ),
+     *              @OA\Property(
+     *                  property="dead_line",
+     *                  type="string",
+     *                  description="기한"
+     *              ),
+     *              @OA\Property(
+     *                  property="complete_time",
+     *                  type="string",
+     *                  description="완료시간"
+     *              ),
+     *              @OA\Property(
+     *                  property="open_at",
+     *                  type="string",
+     *                  description="등록 시간"
+     *              ),
+     *              @OA\Property(
+     *                  property="reserved_at",
+     *                  type="string",
+     *                  description="예약 시간"
+     *              ),
+     *              @OA\Property(
+     *                  property="created_at",
+     *                  type="string",
+     *                  description="생성일"
+     *              ),
+     *              @OA\Property(
+     *                  property="tags",
+     *                  type="array",
+     *                  description="태그",
+     *                  @OA\Items(
+     *                      type="object",
+     *                      @OA\Property(
+     *                          property="id",
+     *                          type="integer",
+     *                          description="태그 번호"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="name",
+     *                          type="string",
+     *                          description="태그 이름"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="position",
+     *                          type="integer",
+     *                          description="우선순위"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="color",
+     *                          type="string",
+     *                          description="색깔 hexColor"
+     *                      ),
+     *                  )
+     *              ),
+     *              example={
+     *                  "id": 1,
+     *                  "contents": "오늘의 할일",
+     *                  "title": "test, 예약된 공지",
+     *                  "date": "2022-11-23",
+     *                  "done": false,
+     *                  "dead_line": "2022-11-25T01:00:00.000000Z",
+     *                  "complete_time": null,
+     *                  "tags": {
+     *                      {
+     *                          "id": 1,
+     *                          "name": "운동",
+     *                          "position": 0,
+     *                          "color": "#5ac7ca"
+     *                      },
+     *                      {
+     *                          "id": 2,
+     *                          "name": "독서",
+     *                          "position": 3,
+     *                          "color": "#111111"
+     *                      }
+     *                  }
+     *              }
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response="403",
+     *          description="일정이 존재하지 않음",
+     *          @OA\JsonContent(ref="#/components/schemas/ResponseAbort")
+     *      )
+     * )
+     */
     public function show(Request $request, $v, $task_id)
     {
         // 사용자 정보
@@ -145,9 +275,9 @@ class TaskController extends Controller
             abort(403, __('aborts.do_not_exist_task'));
         }
 
-        $task->tag = [];
+        $task->tags = [];
         if ($task->tagToTasks->isNotEmpty()) {
-            $task->tag = $task->tagToTasks->map(function ($item) {
+            $task->tags = $task->tagToTasks->map(function ($item) {
                 // 태그가 없는 경우
                 if ($item->tag === null) {
                     return ;
@@ -157,9 +287,43 @@ class TaskController extends Controller
             })->sortBy('position')->filter();
         }
 
-        return $task->only(['id', 'contents', 'date', 'done', 'dead_line', 'complete_time', 'tag']);
+        return $task->only(['id', 'contents', 'date', 'done', 'dead_line', 'complete_time', 'tags']);
     }
 
+    /**
+     * @OA\Delete(
+     *      path="/api/v1/tasks/{task_id}",
+     *      tags={"일정"},
+     *      summary="일정 삭제",
+     *      description="일정 개별 삭제",
+     *      security={
+     *          {"auth":{}}
+     *      },
+     *      @OA\Parameter(
+     *          name="task_id",
+     *          in="path",
+     *          description="일정 번호",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response="201",
+     *          description="성공",
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="result",
+     *                  type="string",
+     *                  description="성공 여부"
+     *              ),
+     *              example={
+     *                  "result": "success",
+     *              }
+     *          )
+     *      )
+     * )
+     */
     public function destroy(Request $request, $v, $task_id)
     {
         // 사용자 정보
