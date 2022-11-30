@@ -32,6 +32,10 @@ use Illuminate\Routing\Controller as BaseController;
  *      name="일정",
  *      description="일정 관련 api"
  * )
+ * @OA\Tag(
+ *      name="태그",
+ *      description="태그 관련 api"
+ * )
  * @OA\Schema(
  *      schema="ResponseAbort",
  *      description="잘못된 요청",

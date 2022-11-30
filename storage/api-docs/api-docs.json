@@ -145,14 +145,14 @@
                 }
             }
         },
-        "/api/v1/task": {
+        "/api/v1/tasks": {
             "post": {
                 "tags": [
                     "일정"
                 ],
-                "summary": "일정 추가",
-                "description": "일정 추가",
-                "operationId": "d5d9ffeaed4535efe2bcf37868edba2d",
+                "summary": "일정 생성",
+                "description": "새로운 일정 생성",
+                "operationId": "379ae513b47f83882f91f2b9143fc425",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -218,7 +218,191 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "auth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/tasks/{task_id}": {
+            "get": {
+                "tags": [
+                    "일정"
+                ],
+                "summary": "일정 상세보기",
+                "description": "일정 개별 상세보기",
+                "operationId": "4e3556e3af607bb1b41003c3f8f5e7f1",
+                "parameters": [
+                    {
+                        "name": "task_id",
+                        "in": "path",
+                        "description": "일정 번호",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "성공",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "description": "할일 번호",
+                                            "type": "string"
+                                        },
+                                        "contents": {
+                                            "description": "할일 내용",
+                                            "type": "string"
+                                        },
+                                        "date": {
+                                            "description": "날짜",
+                                            "type": "string"
+                                        },
+                                        "done": {
+                                            "description": "완료 여부",
+                                            "type": "boolean"
+                                        },
+                                        "dead_line": {
+                                            "description": "기한",
+                                            "type": "string"
+                                        },
+                                        "complete_time": {
+                                            "description": "완료시간",
+                                            "type": "string"
+                                        },
+                                        "open_at": {
+                                            "description": "등록 시간",
+                                            "type": "string"
+                                        },
+                                        "reserved_at": {
+                                            "description": "예약 시간",
+                                            "type": "string"
+                                        },
+                                        "created_at": {
+                                            "description": "생성일",
+                                            "type": "string"
+                                        },
+                                        "tags": {
+                                            "description": "태그",
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "description": "태그 번호",
+                                                        "type": "integer"
+                                                    },
+                                                    "name": {
+                                                        "description": "태그 이름",
+                                                        "type": "string"
+                                                    },
+                                                    "position": {
+                                                        "description": "우선순위",
+                                                        "type": "integer"
+                                                    },
+                                                    "color": {
+                                                        "description": "색깔 hexColor",
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "id": 1,
+                                    "contents": "오늘의 할일",
+                                    "title": "test, 예약된 공지",
+                                    "date": "2022-11-23",
+                                    "done": false,
+                                    "dead_line": "2022-11-25T01:00:00.000000Z",
+                                    "complete_time": null,
+                                    "tags": [
+                                        {
+                                            "id": 1,
+                                            "name": "운동",
+                                            "position": 0,
+                                            "color": "#5ac7ca"
+                                        },
+                                        {
+                                            "id": 2,
+                                            "name": "독서",
+                                            "position": 3,
+                                            "color": "#111111"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "일정이 존재하지 않음",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseAbort"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "auth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "일정"
+                ],
+                "summary": "일정 삭제",
+                "description": "일정 개별 삭제",
+                "operationId": "54971697b5795ee914b85f976ecdc1c3",
+                "parameters": [
+                    {
+                        "name": "task_id",
+                        "in": "path",
+                        "description": "일정 번호",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "성공",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "description": "성공 여부",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "result": "success"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "auth": []
+                    }
+                ]
             }
         },
         "/api/v1/login": {
@@ -337,7 +521,7 @@
                     "사용자"
                 ],
                 "summary": "사용자 프로필 조회",
-                "operationId": "0cdd3bb79e9babcbb021338ac0d0524e",
+                "operationId": "51a8c66871649e306d393938ca1ad8e2",
                 "responses": {
                     "200": {
                         "description": "성공",
@@ -364,6 +548,139 @@
                                     "name": "jean",
                                     "email": "test@example.com",
                                     "status_message": null
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "auth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "사용자"
+                ],
+                "summary": "사용자 정보 수정",
+                "description": "사용자 정보 수정",
+                "operationId": "4b3bbd32d79667b5eb02ef9a1224bd7a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "description": "(선택)이름",
+                                        "type": "string",
+                                        "example": "김수현"
+                                    },
+                                    "status_message": {
+                                        "description": "(선택)상태메세지",
+                                        "type": "string",
+                                        "example": "오늘도 화이팅~"
+                                    },
+                                    "delete_status_message": {
+                                        "description": "(필수)상태메세지 삭제 여부",
+                                        "type": "boolean"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "성공",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "description": "성공 여부",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "result": "success"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "auth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/profile/password": {
+            "put": {
+                "tags": [
+                    "사용자"
+                ],
+                "summary": "비밀번호 수정",
+                "description": "사용자 비밀번호 수정",
+                "operationId": "c3f53ecd4c50e70dbcf43b69162f3ea6",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "current_password": {
+                                        "description": "(필수)현재 비밀번호",
+                                        "type": "string",
+                                        "example": "todo1234!!"
+                                    },
+                                    "new_password": {
+                                        "description": "(필수)변경할 비밀번호",
+                                        "type": "string",
+                                        "example": "todo4321!!!"
+                                    },
+                                    "new_password_confirmation": {
+                                        "description": "(필수)변경할 비밀번호 확인",
+                                        "type": "string",
+                                        "example": "todo4321!!!"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "성공",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "description": "성공 여부",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "result": "success"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "기타 오류",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseAbort"
                                 }
                             }
                         }
@@ -408,6 +725,10 @@
         {
             "name": "일정",
             "description": "일정 관련 api"
+        },
+        {
+            "name": "태그",
+            "description": "태그 관련 api"
         }
     ]
 }

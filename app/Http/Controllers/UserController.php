@@ -232,7 +232,53 @@ class UserController extends Controller
         return $request->get('user')->only(['name', 'email', 'status_message']);
     }
 
-
+    /**
+     * @OA\Put(
+     *      path="/api/v1/profile",
+     *      tags={"사용자"},
+     *      summary="사용자 정보 수정",
+     *      description="사용자 정보 수정",
+     *      security={
+     *          {"auth":{}}
+     *      },
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="name",
+     *                  type="string",
+     *                  description="(선택)이름",
+     *                  example="김수현"
+     *              ),
+     *              @OA\Property(
+     *                  property="status_message",
+     *                  type="string",
+     *                  description="(선택)상태메세지",
+     *                  example="오늘도 화이팅~"
+     *              ),
+     *              @OA\Property(
+     *                  property="delete_status_message",
+     *                  type="boolean",
+     *                  description="(필수)상태메세지 삭제 여부",
+     *              ),
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response="201",
+     *          description="성공",
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="result",
+     *                  type="string",
+     *                  description="성공 여부"
+     *              ),
+     *              example={
+     *                  "result": "success",
+     *              }
+     *          )
+     *      )
+     * )
+     */
     public function update(Request $request)
     {
         $this->validate($request, [
@@ -265,8 +311,60 @@ class UserController extends Controller
         ], 201);
     }
 
-
-    public function editPassword(Request $request)
+    /**
+     * @OA\Put(
+     *      path="/api/v1/profile/password",
+     *      tags={"사용자"},
+     *      summary="비밀번호 수정",
+     *      description="사용자 비밀번호 수정",
+     *      security={
+     *          {"auth":{}}
+     *      },
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="current_password",
+     *                  type="string",
+     *                  description="(필수)현재 비밀번호",
+     *                  example="todo1234!!"
+     *              ),
+     *              @OA\Property(
+     *                  property="new_password",
+     *                  type="string",
+     *                  description="(필수)변경할 비밀번호",
+     *                  example="todo4321!!!"
+     *              ),
+     *              @OA\Property(
+     *                  property="new_password_confirmation",
+     *                  type="string",
+     *                  description="(필수)변경할 비밀번호 확인",
+     *                  example="todo4321!!!"
+     *              ),
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response="201",
+     *          description="성공",
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="result",
+     *                  type="string",
+     *                  description="성공 여부"
+     *              ),
+     *              example={
+     *                  "result": "success",
+     *              }
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response="403",
+     *          description="기타 오류",
+     *          @OA\JsonContent(ref="#/components/schemas/ResponseAbort")
+     *      )
+     * )
+     */
+    public function updatePassword(Request $request)
     {
         $this->validate($request, [
             'current_password' => 'required',
