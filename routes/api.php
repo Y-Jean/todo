@@ -56,6 +56,10 @@ Route::group(
             Route::group(['prefix' => 'tasks'], function () {
                 // 일정 추가
                 Route::post('/', [TaskController::class, 'store']);
+                // 일정 수정
+                Route::put('/{task_id}', [TaskController::class, 'update'])->where('task_id', '[0-9]+');
+                // 일정 완료여부 수정
+                Route::put('/{task_id}/done', [TaskController::class, 'updateDone'])->where('task_id', '[0-9]+');
                 // 일정 상세보기
                 Route::get('/{task_id}', [TaskController::class, 'show'])->where('task_id', '[0-9]+');
                 // 일정 삭제
