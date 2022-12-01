@@ -145,6 +145,331 @@
                 }
             }
         },
+        "/api/v1/tags": {
+            "get": {
+                "tags": [
+                    "태그"
+                ],
+                "summary": "태그 리스트 조회",
+                "description": "태그 리스트 조회",
+                "operationId": "49b8aae23d92f665318c3273cb54ec75",
+                "responses": {
+                    "200": {
+                        "description": "성공",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "tags": {
+                                            "description": "태그 리스트",
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "description": "태그 번호",
+                                                        "type": "integer"
+                                                    },
+                                                    "name": {
+                                                        "description": "이름",
+                                                        "type": "string"
+                                                    },
+                                                    "position": {
+                                                        "description": "우선순위",
+                                                        "type": "integer"
+                                                    },
+                                                    "color": {
+                                                        "description": "hexColor",
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "tags": [
+                                        {
+                                            "id": 1,
+                                            "name": "운동",
+                                            "position": 0,
+                                            "color": "#5ac7ca"
+                                        },
+                                        {
+                                            "id": 2,
+                                            "name": "독서",
+                                            "position": 1,
+                                            "color": "#111111"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "auth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "태그"
+                ],
+                "summary": "태그 생성",
+                "description": "새로운 태그 생성",
+                "operationId": "9e21dd3b04a3e4b23f12a3ce0de8c7e5",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "description": "(필수)이름",
+                                        "type": "string",
+                                        "example": "공부"
+                                    },
+                                    "color": {
+                                        "description": "(선택)hexColor",
+                                        "type": "string",
+                                        "example": "#000000"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "성공",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "description": "성공 여부",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "result": "success"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "auth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/tags/{tag_id}": {
+            "get": {
+                "tags": [
+                    "태그"
+                ],
+                "summary": "태그 상세보기",
+                "description": "태그 개별 상세보기",
+                "operationId": "361ad3847c2cd195b9fa30fc28098469",
+                "parameters": [
+                    {
+                        "name": "tag_id",
+                        "in": "path",
+                        "description": "태그 번호",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "성공",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "description": "태그 번호",
+                                            "type": "string"
+                                        },
+                                        "name": {
+                                            "description": "태그 이름",
+                                            "type": "string"
+                                        },
+                                        "position": {
+                                            "description": "우선순위",
+                                            "type": "integer"
+                                        },
+                                        "color": {
+                                            "description": "hexColor",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "id": 1,
+                                    "name": "운동",
+                                    "position": 0,
+                                    "color": "#5ac7ca"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "태그가 존재하지 않음",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseAbort"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "auth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "태그"
+                ],
+                "summary": "태그 수정",
+                "description": "기존 태그 수정",
+                "operationId": "9a54b500c4247b8ee01adeeb4f170945",
+                "parameters": [
+                    {
+                        "name": "tag_id",
+                        "in": "path",
+                        "description": "태그 번호",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "description": "(선택)이름",
+                                        "type": "string",
+                                        "example": "공부"
+                                    },
+                                    "position": {
+                                        "description": "(선택)우선순위",
+                                        "type": "integer",
+                                        "example": 3
+                                    },
+                                    "color": {
+                                        "description": "(선택)hexColor",
+                                        "type": "string",
+                                        "example": "#000000"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "성공",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "description": "성공 여부",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "result": "success"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "태그가 존재하지 않음",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseAbort"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "auth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "태그"
+                ],
+                "summary": "태그 삭제",
+                "description": "태그 개별 삭제",
+                "operationId": "2d95536bf0999aa001a8f791656985d7",
+                "parameters": [
+                    {
+                        "name": "tag_id",
+                        "in": "path",
+                        "description": "태그 번호",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "성공",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "description": "성공 여부",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "result": "success"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "auth": []
+                    }
+                ]
+            }
+        },
         "/api/v1/tasks": {
             "post": {
                 "tags": [
@@ -178,7 +503,7 @@
                                         }
                                     },
                                     "dead_line": {
-                                        "description": "(필수)완료 예정 시간",
+                                        "description": "(선택)완료 예정 시간",
                                         "type": "string",
                                         "example": "2022-11-23 16:30:00"
                                     }
@@ -359,6 +684,90 @@
                     }
                 ]
             },
+            "put": {
+                "tags": [
+                    "일정"
+                ],
+                "summary": "일정 수정",
+                "description": "기존 일정 수정",
+                "operationId": "262058e14947c763dc200ce0eb96544b",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "contents": {
+                                        "description": "(필수)일정",
+                                        "type": "string",
+                                        "example": "병원가기"
+                                    },
+                                    "date": {
+                                        "description": "(필수)날짜",
+                                        "type": "string",
+                                        "example": "2022-11-23"
+                                    },
+                                    "tag_ids": {
+                                        "description": "(선택)태그 번호(0~3개)",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer",
+                                            "example": "1"
+                                        }
+                                    },
+                                    "dead_line": {
+                                        "description": "(선택)완료 예정 시간",
+                                        "type": "string",
+                                        "example": "2022-11-23 16:30:00"
+                                    },
+                                    "done": {
+                                        "description": "(선택)완료 여부",
+                                        "type": "boolean",
+                                        "example": false
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "성공",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "description": "성공 여부",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "result": "success"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "기타 오류",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseAbort"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "auth": []
+                    }
+                ]
+            },
             "delete": {
                 "tags": [
                     "일정"
@@ -393,6 +802,69 @@
                                 },
                                 "example": {
                                     "result": "success"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "auth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/tasks/{task_id}/done": {
+            "put": {
+                "tags": [
+                    "일정"
+                ],
+                "summary": "일정 완료 등록",
+                "description": "기존 일정 완료/미완료 표기 변경",
+                "operationId": "0514dc358c55177d49e0cbda6acff643",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "done": {
+                                        "description": "(필수)완료 여부",
+                                        "type": "boolean",
+                                        "example": false
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "성공",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "description": "성공 여부",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "result": "success"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "기타 오류",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ResponseAbort"
                                 }
                             }
                         }
