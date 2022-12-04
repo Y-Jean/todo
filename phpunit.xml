@@ -3,28 +3,48 @@
          xsi:noNamespaceSchemaLocation="./vendor/phpunit/phpunit/phpunit.xsd"
          bootstrap="vendor/autoload.php"
          colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnFailure="false">
 >
     <testsuites>
-        <testsuite name="Unit">
+        <testsuite name="Controller Test Suite">
+            <directory suffix="Test.php">./tests/Unit/Controllers</directory>
+        </testsuite>
+
+        <testsuite name="Model Test Suite">
+            <directory suffix="Test.php">./tests/Unit/Models</directory>
+        </testsuite>
+
+        <!-- <testsuite name="Unit">
             <directory suffix="Test.php">./tests/Unit</directory>
         </testsuite>
         <testsuite name="Feature">
             <directory suffix="Test.php">./tests/Feature</directory>
-        </testsuite>
+        </testsuite> -->
     </testsuites>
     <coverage processUncoveredFiles="true">
         <include>
             <directory suffix=".php">./app</directory>
         </include>
+        <report>
+            <clover outputFile="reports/coverage.xml"/>
+            <text outputFile="php://stdout"/>
+        </report>
     </coverage>
     <php>
         <env name="APP_ENV" value="testing"/>
-        <env name="BCRYPT_ROUNDS" value="4"/>
-        <env name="CACHE_DRIVER" value="array"/>
-        <env name="DB_DATABASE" value="testing"/>
-        <env name="MAIL_MAILER" value="array"/>
-        <env name="QUEUE_CONNECTION" value="sync"/>
-        <env name="SESSION_DRIVER" value="array"/>
-        <env name="TELESCOPE_ENABLED" value="false"/>
+        <!-- <env name="BCRYPT_ROUNDS" value="4"/> -->
+        <env name="CACHE_DRIVER" value="redis"/>
+        <!-- <env name="DB_DATABASE" value="testing"/> -->
+        <!-- <env name="MAIL_MAILER" value="array"/> -->
+        <env name="QUEUE_CONNECTION" value="redis"/>
+        <!-- <env name="SESSION_DRIVER" value="array"/> -->
+        <!-- <env name="TELESCOPE_ENABLED" value="false"/> -->
     </php>
+    <logging>
+        <junit outputFile="reports/logfile.xml"/>
+    </logging>
 </phpunit>

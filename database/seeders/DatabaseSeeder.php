@@ -19,8 +19,16 @@ class DatabaseSeeder extends Seeder
 
         User::factory()->create([
             'name' => 'jean',
-            'email' => 'test@example.com',
+            'email' => 'jean@example.com',
         ]);
+
+        if (env('APP_ENV') === 'testing') {
+            // 테스트에 사용될 계정 생성
+            User::factory()->create([
+                'name' => 'test',
+                'email' => 'test@example.com',
+            ]);
+        }
 
         if (env('APP_ENV') === 'local' || env('APP_ENV') === 'testing') {
             $this->call([
