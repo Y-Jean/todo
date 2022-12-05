@@ -344,8 +344,8 @@ paths:
             application/json:
               schema:
                 properties:
-                  id: { description: '할일 번호', type: string }
-                  contents: { description: '할일 내용', type: string }
+                  id: { description: '일정 번호', type: string }
+                  contents: { description: '일정 내용', type: string }
                   date: { description: 날짜, type: string }
                   done: { description: '완료 여부', type: boolean }
                   dead_line: { description: 기한, type: string }
@@ -357,7 +357,7 @@ paths:
                 type: object
               example:
                 id: 1
-                contents: '오늘의 할일'
+                contents: '오늘의 일정'
                 title: 'test, 예약된 공지'
                 date: '2022-11-23'
                 done: false

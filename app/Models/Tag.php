@@ -72,4 +72,19 @@ class Tag extends Model
 
         return $position;
     }
+
+    /**
+     * 테스트 시 팩토리로 생성한 태그의 포지션 정리
+     */
+    public function resetPosition($user_id)
+    {
+        $tags = Tag::where('user_id', $user_id)->orderBy('created_at')->get();
+
+        $position = 0;
+        foreach ($tags as $tag) {
+            $tag->position = $position;
+            $tag->save();
+            $position++;
+        }
+    }
 }

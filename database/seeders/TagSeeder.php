@@ -16,7 +16,7 @@ class TagSeeder extends Seeder
      */
     public function run()
     {
-        $user = User::where('email', 'test@example.com')->first();
+        $user = User::where('email', 'jean@example.com')->first();
         if ($user !==null) {
             Tag::factory()->count(5)->create([
                 'user_id' => $user->id

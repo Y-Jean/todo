@@ -90,7 +90,7 @@ class TaskController extends Controller
         // 사용자 정보
         $user = $request->get('user');
 
-        // 할일 내용
+        // 일정 내용
         $contents = $request->input('contents');
         // 날짜
         $date = $request->input('date');
@@ -220,7 +220,7 @@ class TaskController extends Controller
         // 사용자 정보
         $user = $request->get('user');
 
-        // 할일 내용
+        // 일정 내용
         $contents = $request->input('contents');
         // 날짜
         $date = $request->input('date');
@@ -398,12 +398,12 @@ class TaskController extends Controller
      *              @OA\Property(
      *                  property="id",
      *                  type="string",
-     *                  description="할일 번호"
+     *                  description="일정 번호"
      *              ),
      *              @OA\Property(
      *                  property="contents",
      *                  type="string",
-     *                  description="할일 내용"
+     *                  description="일정 내용"
      *              ),
      *              @OA\Property(
      *                  property="date",
@@ -470,7 +470,7 @@ class TaskController extends Controller
      *              ),
      *              example={
      *                  "id": 1,
-     *                  "contents": "오늘의 할일",
+     *                  "contents": "오늘의 일정",
      *                  "title": "test, 예약된 공지",
      *                  "date": "2022-11-23",
      *                  "done": false,

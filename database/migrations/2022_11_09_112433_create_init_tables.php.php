@@ -67,7 +67,7 @@ return new class () extends Migration {
             $table->softDeletesTz();
         });
 
-        // 할일 테이블
+        // 일정 테이블
         Schema::create('tasks', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name', 500)->default('')->comment('일정');
