@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -16,8 +17,10 @@ class TagFactory extends Factory
      */
     public function definition()
     {
+        $user_id = User::factory()->create()->id;
         static $position = 0;
         return [
+            'user_id' => $user_id,
             'name' => fake()->word(),
             'color' => fake()->hexColor(),
             'position' => $position++

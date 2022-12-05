@@ -8,13 +8,13 @@ services:
             args:
                 WWWGROUP: '${WWWGROUP}'
                 XDEBUG: '${APP_DEBUG:-false}'
-                XDEBUG_PORT: '${SAIL_XDEBUG_PORT:-9003}'
         image: sail-8.1/app
         extra_hosts:
             - 'host.docker.internal:host-gateway'
         ports:
             - '${APP_PORT:-80}:80'
             - '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
+            - '9003:9003'
         environment:
             WWWUSER: '${WWWUSER}'
             LARAVEL_SAIL: 1
