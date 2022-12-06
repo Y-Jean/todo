@@ -36,14 +36,6 @@ return new class () extends Migration {
 
             $table->timestampsTz();
             $table->softDeletesTz();
-
-            // $table->id();
-            // $table->string('name');
-            // $table->string('email')->unique();
-            // $table->timestamp('email_verified_at')->nullable();
-            // $table->string('password');
-            // $table->rememberToken();
-            // $table->timestamps();
         });
 
         // options 테이블
@@ -61,7 +53,7 @@ return new class () extends Migration {
             $table->foreignId('user_id')->comment('사용자번호')->constrained('users')->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('name', 100)->comment('태그 명');
             $table->unsignedSmallInteger('position')->comment('표시순서');
-            $table->string('profile_image_id', 10)->nullable()->comment('태그 RGB값');
+            $table->string('color', 10)->nullable()->comment('태그 RGB값');
 
             $table->timestampsTz();
             $table->softDeletesTz();
@@ -70,12 +62,13 @@ return new class () extends Migration {
         // 일정 테이블
         Schema::create('tasks', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name', 500)->default('')->comment('일정');
+            $table->string('contents', 500)->default('')->comment('일정');
             $table->foreignId('user_id')->comment('사용자번호')->constrained('users')->cascadeOnUpdate()->cascadeOnDelete();
             $table->boolean('done')->default(false)->comment('완료여부');
             $table->timestampTz('dead_line')->nullable()->comment('제한 시간');
             $table->timestampTz('complete_time')->nullable()->comment('완료시간');
             $table->date('date')->comment('날짜');
+            $table->foreignId('tag_id')->nullable()->comment('태그번호')->constrained('tags')->cascadeOnUpdate();
 
             $table->timestampsTz();
             $table->softDeletesTz();

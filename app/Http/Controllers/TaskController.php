@@ -14,6 +14,200 @@ use Illuminate\Http\Request;
 class TaskController extends Controller
 {
     /**
+     * @OA\Get(
+     *      path="/api/v1/tags?period={period}&date={date}",
+     *      tags={"알정"},
+     *      summary="단위기간별 일정 조회",
+     *      description="일간, 주간 월간 단위기간별 일정 조회",
+     *      security={
+     *          {"auth":{}}
+     *      },
+     *      @OA\Parameter(
+     *          name="period",
+     *          in="path",
+     *          description="단위기간",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="string",
+     *              enum={"agent_name", "os", "ip", "version"},
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="date",
+     *          in="path",
+     *          description="조회 기준일(기준일이 포함된 일/주/월 조회)",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="tag_ids",
+     *          in="path",
+     *          description="태그 번호",
+     *          required=false,
+     *          @OA\Schema(
+     *              type="array",
+     *              @OA\Items()
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response="200",
+     *          description="성공",
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="start_date",
+     *                  type="string",
+     *                  description="단위 기간 시작일"
+     *              ),
+     *              @OA\Property(
+     *                  property="end_date",
+     *                  type="string",
+     *                  description="단위 기간 종료일"
+     *              ),
+     *              @OA\Property(
+     *                  property="tasks",
+     *                  type="array",
+     *                  description="일정 리스트",
+     *                  @OA\Items(
+     *                      type="object",
+     *                      @OA\Property(
+     *                          property="id",
+     *                          type="integer",
+     *                          description="일정 번호"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="contents",
+     *                          type="string",
+     *                          description="일정 내용"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="done",
+     *                          type="boolean",
+     *                          description="완료 여부"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="dead_line",
+     *                          type="string",
+     *                          description="기한"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="complete_time",
+     *                          type="string",
+     *                          description="완료 시간"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="date",
+     *                          type="string",
+     *                          description="날짜"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="tag_id",
+     *                          type="string",
+     *                          description="태그 번호"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="tag_name",
+     *                          type="string",
+     *                          description="태그 이름"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="position",
+     *                          type="integer",
+     *                          description="우선순위"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="color",
+     *                          type="string",
+     *                          description="hexColor"
+     *                      )
+     *                  )
+     *              ),
+     *              example={
+     *                  "tags": {
+     *                      {
+     *                          "id": 1,
+     *                          "contents": "오늘의 할일",
+     *                          "done": false,
+     *                          "dead_line": "2022-12-10T01:00:00.000000Z",
+     *                          "complete_time": null,
+     *                          "date": "2022-12-05",
+     *                          "tag_id": 3,
+     *                          "tag_name": "운동",
+     *                          "position": 1,
+     *                          "color": "#355921"
+     *                      },
+     *                      {
+     *                          "id": 7,
+     *                          "contents": "12월 8일의 할일",
+     *                          "done": true,
+     *                          "dead_line": null,
+     *                          "complete_time": null,
+     *                          "date": "2022-12-08",
+     *                          "tag_id": 2,
+     *                          "tag_name": "어학",
+     *                          "position": 0,
+     *                          "color": "#70b0eb"
+     *                      }
+     *                  }
+     *              }
+     *          )
+     *      )
+     * )
+     */
+    public function index(Request $request)
+    {
+        $this->validate($request, [
+            'period' => 'required|string|in:day,week,month',
+            'date' => 'required|date_format:Y-m-d',
+            'tag_ids' => 'nullable|array',
+            'tag_ids.*' => 'integer|min:0'
+        ], [
+            '*' => __('validations.format')
+        ]);
+
+        // 사용자 정보
+        $user = $request->get('user');
+
+        $period = $request->get('period');
+        $tag_ids = collect($request->input('tag_ids'))->unique();
+        $date = Carbon::parse($request->input('date'));
+        $startDate = $date->toDateString();
+        $endDate = $date->toDateString();
+
+        if ($period === 'week') {
+            $startDate = $date->copy()->startOfWeek()->toDateString();
+            $endDate = $date->copy()->endOfWeek()->toDateString();
+        } elseif ($period === 'month') {
+            $startDate = $date->copy()->startOfMonth()->toDateString();
+            $endDate = $date->copy()->endOfMonth()->toDateString();
+        }
+
+        $tasks = Task::leftjoin('tags', function ($join){
+                        $join->on('tags.id', '=', 'tasks.tag_id')
+                            ->whereNull('tags.deleted_at');
+                    })
+                    ->whereBetween('tasks.date', [$startDate, $endDate])
+                    ->where('tasks.user_id', $user->id)
+                    ->when($tag_ids->isNotEmpty(), function ($query) use ($tag_ids) {
+                        $query->whereIn('tasks.tag_id', $tag_ids);
+                    })
+                    ->orderBy('tasks.date')
+                    ->orderBy('tags.position')
+                    ->select([
+                        'tasks.id', 'tasks.contents', 'tasks.done', 'tasks.dead_line', 'tasks.complete_time', 'tasks.date', 'tasks.tag_id',
+                        'tags.name as tag_name', 'tags.position', 'tags.color'
+                    ])
+                    ->get();
+
+        return response()->json([
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+            'tasks' => $tasks
+        ]);
+    }
+
+    /**
      * @OA\Post(
      *      path="/api/v1/tasks",
      *      tags={"일정"},
@@ -38,13 +232,10 @@ class TaskController extends Controller
      *                  example="2022-11-23"
      *              ),
      *              @OA\Property(
-     *                  property="tag_ids",
-     *                  type="array",
-     *                  description="(선택)태그 번호(0~3개)",
-     *                  @OA\Items(
-     *                      type="integer",
-     *                      example="1"
-     *                  )
+     *                  property="tag_id",
+     *                  type="integer",
+     *                  description="(선택)태그 번호",
+     *                  example=1
      *              ),
      *              @OA\Property(
      *                  property="dead_line",
@@ -80,8 +271,7 @@ class TaskController extends Controller
         $this->validate($request, [
             'contents' => 'required|string',
             'date' => 'required|date|date_format:Y-m-d',
-            'tag_ids' => 'nullable|array',
-            'tag_ids.*' => 'integer|min:0',
+            'tag_id' => 'integer|min:0',
             'dead_line' => 'nullable|date_format:Y-m-d H:i:s'
         ], [
             '*' => __('validations.format'),
@@ -95,7 +285,7 @@ class TaskController extends Controller
         // 날짜
         $date = $request->input('date');
         // 태그 아이디
-        $tag_ids = collect($request->input('tag_ids'))->unique();
+        $tag_id = $request->input('tag_id');
         $deadLine = $request->input('dead_line') !== null ? Carbon::createFromFormat('Y-m-d H:i:s', $request->input('dead_line')) : null;
 
         // 내용이 비었을 경우
@@ -103,33 +293,15 @@ class TaskController extends Controller
             abort(403, __('aborts.do_not_exist_contents'));
         }
 
-        $tags = null;
-        if ($tag_ids !== null) {
-            $tags = Tag::whereIn('id', $tag_ids->toArray())->where('user_id', $user->id)->get();
-
-            // 태그가 세 개 이상일 경우
-            if ($tags !== null && $tags->count() > 3) {
-                abort(403, __('aborts.too_much_tags'));
-            }
-        }
+        $tag = Tag::where('user_id', $user->id)->find($tag_id);
 
         $task = new Task();
         $task->user_id = $user->id;
         $task->contents = $contents;
         $task->date = $date;
         $task->dead_line = $deadLine;
+        $task->tag_id = $tag !== null ? $tag->id : null;
         $task->save();
-
-        if ($tags !== null) {
-            $tags->each(function ($item) use ($user, $task) {
-                $tag_to_task = new TagToTask();
-                $tag_to_task->tag_id = $item->id;
-                $tag_to_task->user_id = $user->id;
-                $tag_to_task->task_id = $task->id;
-
-                $tag_to_task->save();
-            });
-        }
 
         return response()->json([
             'result' => 'success'
@@ -161,13 +333,10 @@ class TaskController extends Controller
      *                  example="2022-11-23"
      *              ),
      *              @OA\Property(
-     *                  property="tag_ids",
-     *                  type="array",
-     *                  description="(선택)태그 번호(0~3개)",
-     *                  @OA\Items(
-     *                      type="integer",
-     *                      example="1"
-     *                  )
+     *                  property="tag_id",
+     *                  type="integer",
+     *                  description="(선택)태그 번호",
+     *                  example=1
      *              ),
      *              @OA\Property(
      *                  property="dead_line",
@@ -209,8 +378,7 @@ class TaskController extends Controller
         $this->validate($request, [
             'contents' => 'required|string',
             'date' => 'required|date|date_format:Y-m-d',
-            'tag_ids' => 'nullable|array',
-            'tag_ids.*' => 'integer|min:0',
+            'tag_id' => 'integer|min:0',
             'dead_line' => 'nullable|date_format:Y-m-d H:i:s',
             'done' => 'nullable|boolean'
         ], [
@@ -225,7 +393,7 @@ class TaskController extends Controller
         // 날짜
         $date = $request->input('date');
         // 태그 아이디
-        $tag_ids = collect($request->input('tag_ids'))->unique();
+        $tag_id = $request->input('tag_id');
         $deadLine = $request->input('dead_line') !== null ? Carbon::createFromFormat('Y-m-d H:i:s', $request->input('dead_line')) : null;
         $done = $request->input('done');
 
@@ -234,24 +402,13 @@ class TaskController extends Controller
             abort(403, __('aborts.do_not_exist_contents'));
         }
 
-        $tags = collect();
-        if ($tag_ids !== null) {
-            $tags = Tag::whereIn('id', $tag_ids->toArray())->where('user_id', $user->id)->get();
-
-            // 태그가 세 개 이상일 경우
-            if ($tags !== null && $tags->count() > 3) {
-                abort(403, __('aborts.too_much_tags'));
-            }
-        }
-
-        $task = Task::with('tagToTasks')
-                    ->where('user_id', $user->id)
-                    ->whereId($task_id)
-                    ->first();
+        $task = Task::where('user_id', $user->id)->find($task_id);
 
         if ($task === null) {
             abort(403, __('aborts.do_not_exist_task'));
         }
+
+        $tag = Tag::where('user_id', $user->id)->find($tag_id);
 
         $task->contents = $contents;
         $task->date = $date;
@@ -267,30 +424,8 @@ class TaskController extends Controller
 
             $task->done = $done;
         }
+        $task->tag_id = $tag !== null ? $tag->id : null;
         $task->save();
-
-        // 수정에 포함되지 않은 태그 연결 삭제
-        TagToTask::where('task_id', $task->id)
-                    ->whereNotIn('tag_id', $tags->pluck('id')->toArray())
-                    ->delete();
-
-        // 새로 추가된 태그 연결
-        if ($tags->isNotEmpty()) {
-            $tags->whereNotIn('id', $task->tagToTasks->pluck('tag_id'))
-                ->each(function ($item) use ($user, $task) {
-                // 태그가 이미 연결된 경우
-                if ($task->tagToTasks->where('tag_id', $item->id)->first() !== null) {
-                    return ;
-                }
-
-                $tag_to_task = new TagToTask();
-                $tag_to_task->tag_id = $item->id;
-                $tag_to_task->user_id = $user->id;
-                $tag_to_task->task_id = $task->id;
-
-                $tag_to_task->save();
-            });
-        }
 
         return response()->json([
             'result' => 'success'
@@ -426,69 +561,42 @@ class TaskController extends Controller
      *                  description="완료시간"
      *              ),
      *              @OA\Property(
-     *                  property="open_at",
-     *                  type="string",
-     *                  description="등록 시간"
-     *              ),
-     *              @OA\Property(
-     *                  property="reserved_at",
-     *                  type="string",
-     *                  description="예약 시간"
-     *              ),
-     *              @OA\Property(
-     *                  property="created_at",
-     *                  type="string",
-     *                  description="생성일"
-     *              ),
-     *              @OA\Property(
      *                  property="tags",
-     *                  type="array",
+     *                  type="object",
      *                  description="태그",
-     *                  @OA\Items(
-     *                      type="object",
-     *                      @OA\Property(
-     *                          property="id",
-     *                          type="integer",
-     *                          description="태그 번호"
-     *                      ),
-     *                      @OA\Property(
-     *                          property="name",
-     *                          type="string",
-     *                          description="태그 이름"
-     *                      ),
-     *                      @OA\Property(
-     *                          property="position",
-     *                          type="integer",
-     *                          description="우선순위"
-     *                      ),
-     *                      @OA\Property(
-     *                          property="color",
-     *                          type="string",
-     *                          description="색깔 hexColor"
-     *                      ),
+     *                  @OA\Property(
+     *                      property="id",
+     *                      type="integer",
+     *                      description="태그 번호"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="name",
+     *                      type="string",
+     *                      description="태그 이름"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="position",
+     *                      type="integer",
+     *                      description="우선순위"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="color",
+     *                      type="string",
+     *                      description="색깔 hexColor"
      *                  )
      *              ),
      *              example={
      *                  "id": 1,
      *                  "contents": "오늘의 일정",
-     *                  "title": "test, 예약된 공지",
      *                  "date": "2022-11-23",
      *                  "done": false,
      *                  "dead_line": "2022-11-25T01:00:00.000000Z",
      *                  "complete_time": null,
      *                  "tags": {
-     *                      {
-     *                          "id": 1,
-     *                          "name": "운동",
-     *                          "position": 0,
-     *                          "color": "#5ac7ca"
-     *                      },
-     *                      {
-     *                          "id": 2,
-     *                          "name": "독서",
-     *                          "position": 3,
-     *                          "color": "#111111"
-     *                      }
+     *                      "id": 1,
+     *                      "name": "운동",
+     *                      "position": 0,
+     *                      "color": "#5ac7ca"
      *                  }
      *              }
      *          )
@@ -505,26 +613,20 @@ class TaskController extends Controller
         // 사용자 정보
         $user = $request->get('user');
 
-        $task = Task::with('tagToTasks.tag')->where('user_id', $user->id)->find($task_id);
+        $task = Task::with([
+                        'tag' => function ($query) {
+                            $query->select(['id', 'name', 'position', 'color']);
+                        }
+                    ])
+                    ->where('user_id', $user->id)
+                    ->find($task_id);
 
         // 조회하려는 일정이 존재하지 않는 경우
         if ($task === null) {
             abort(403, __('aborts.do_not_exist_task'));
         }
 
-        $task->tags = [];
-        if ($task->tagToTasks->isNotEmpty()) {
-            $task->tags = $task->tagToTasks->map(function ($item) {
-                // 태그가 없는 경우
-                if ($item->tag === null) {
-                    return ;
-                }
-
-                return $item->tag->only(['id', 'name', 'position', 'color']);
-            })->sortBy('position')->filter();
-        }
-
-        return $task->only(['id', 'contents', 'date', 'done', 'dead_line', 'complete_time', 'tags']);
+        return $task->only(['id', 'contents', 'date', 'done', 'dead_line', 'complete_time', 'tag']);
     }
 
     /**

@@ -470,6 +470,156 @@
                 ]
             }
         },
+        "/api/v1/tags?period={period}&date={date}": {
+            "get": {
+                "tags": [
+                    "알정"
+                ],
+                "summary": "단위기간별 일정 조회",
+                "description": "일간, 주간 월간 단위기간별 일정 조회",
+                "operationId": "118753c9f2fdf393a2631e100ba5db18",
+                "parameters": [
+                    {
+                        "name": "period",
+                        "in": "path",
+                        "description": "단위기간",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "agent_name",
+                                "os",
+                                "ip",
+                                "version"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "date",
+                        "in": "path",
+                        "description": "조회 기준일(기준일이 포함된 일/주/월 조회)",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "tag_ids",
+                        "in": "path",
+                        "description": "태그 번호",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {}
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "성공",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "start_date": {
+                                            "description": "단위 기간 시작일",
+                                            "type": "string"
+                                        },
+                                        "end_date": {
+                                            "description": "단위 기간 종료일",
+                                            "type": "string"
+                                        },
+                                        "tasks": {
+                                            "description": "일정 리스트",
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "description": "일정 번호",
+                                                        "type": "integer"
+                                                    },
+                                                    "contents": {
+                                                        "description": "일정 내용",
+                                                        "type": "string"
+                                                    },
+                                                    "done": {
+                                                        "description": "완료 여부",
+                                                        "type": "boolean"
+                                                    },
+                                                    "dead_line": {
+                                                        "description": "기한",
+                                                        "type": "string"
+                                                    },
+                                                    "complete_time": {
+                                                        "description": "완료 시간",
+                                                        "type": "string"
+                                                    },
+                                                    "date": {
+                                                        "description": "날짜",
+                                                        "type": "string"
+                                                    },
+                                                    "tag_id": {
+                                                        "description": "태그 번호",
+                                                        "type": "string"
+                                                    },
+                                                    "tag_name": {
+                                                        "description": "태그 이름",
+                                                        "type": "string"
+                                                    },
+                                                    "position": {
+                                                        "description": "우선순위",
+                                                        "type": "integer"
+                                                    },
+                                                    "color": {
+                                                        "description": "hexColor",
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "tags": [
+                                        {
+                                            "id": 1,
+                                            "contents": "오늘의 할일",
+                                            "done": false,
+                                            "dead_line": "2022-12-10T01:00:00.000000Z",
+                                            "complete_time": null,
+                                            "date": "2022-12-05",
+                                            "tag_id": 3,
+                                            "tag_name": "운동",
+                                            "position": 1,
+                                            "color": "#355921"
+                                        },
+                                        {
+                                            "id": 7,
+                                            "contents": "12월 8일의 할일",
+                                            "done": true,
+                                            "dead_line": null,
+                                            "complete_time": null,
+                                            "date": "2022-12-08",
+                                            "tag_id": 2,
+                                            "tag_name": "어학",
+                                            "position": 0,
+                                            "color": "#70b0eb"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "auth": []
+                    }
+                ]
+            }
+        },
         "/api/v1/tasks": {
             "post": {
                 "tags": [
@@ -494,13 +644,10 @@
                                         "type": "string",
                                         "example": "2022-11-23"
                                     },
-                                    "tag_ids": {
-                                        "description": "(선택)태그 번호(0~3개)",
-                                        "type": "array",
-                                        "items": {
-                                            "type": "integer",
-                                            "example": "1"
-                                        }
+                                    "tag_id": {
+                                        "description": "(선택)태그 번호",
+                                        "type": "integer",
+                                        "example": 1
                                     },
                                     "dead_line": {
                                         "description": "(선택)완료 예정 시간",
@@ -601,42 +748,27 @@
                                             "description": "완료시간",
                                             "type": "string"
                                         },
-                                        "open_at": {
-                                            "description": "등록 시간",
-                                            "type": "string"
-                                        },
-                                        "reserved_at": {
-                                            "description": "예약 시간",
-                                            "type": "string"
-                                        },
-                                        "created_at": {
-                                            "description": "생성일",
-                                            "type": "string"
-                                        },
                                         "tags": {
                                             "description": "태그",
-                                            "type": "array",
-                                            "items": {
-                                                "properties": {
-                                                    "id": {
-                                                        "description": "태그 번호",
-                                                        "type": "integer"
-                                                    },
-                                                    "name": {
-                                                        "description": "태그 이름",
-                                                        "type": "string"
-                                                    },
-                                                    "position": {
-                                                        "description": "우선순위",
-                                                        "type": "integer"
-                                                    },
-                                                    "color": {
-                                                        "description": "색깔 hexColor",
-                                                        "type": "string"
-                                                    }
+                                            "properties": {
+                                                "id": {
+                                                    "description": "태그 번호",
+                                                    "type": "integer"
                                                 },
-                                                "type": "object"
-                                            }
+                                                "name": {
+                                                    "description": "태그 이름",
+                                                    "type": "string"
+                                                },
+                                                "position": {
+                                                    "description": "우선순위",
+                                                    "type": "integer"
+                                                },
+                                                "color": {
+                                                    "description": "색깔 hexColor",
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -644,25 +776,16 @@
                                 "example": {
                                     "id": 1,
                                     "contents": "오늘의 일정",
-                                    "title": "test, 예약된 공지",
                                     "date": "2022-11-23",
                                     "done": false,
                                     "dead_line": "2022-11-25T01:00:00.000000Z",
                                     "complete_time": null,
-                                    "tags": [
-                                        {
-                                            "id": 1,
-                                            "name": "운동",
-                                            "position": 0,
-                                            "color": "#5ac7ca"
-                                        },
-                                        {
-                                            "id": 2,
-                                            "name": "독서",
-                                            "position": 3,
-                                            "color": "#111111"
-                                        }
-                                    ]
+                                    "tags": {
+                                        "id": 1,
+                                        "name": "운동",
+                                        "position": 0,
+                                        "color": "#5ac7ca"
+                                    }
                                 }
                             }
                         }
@@ -707,13 +830,10 @@
                                         "type": "string",
                                         "example": "2022-11-23"
                                     },
-                                    "tag_ids": {
-                                        "description": "(선택)태그 번호(0~3개)",
-                                        "type": "array",
-                                        "items": {
-                                            "type": "integer",
-                                            "example": "1"
-                                        }
+                                    "tag_id": {
+                                        "description": "(선택)태그 번호",
+                                        "type": "integer",
+                                        "example": 1
                                     },
                                     "dead_line": {
                                         "description": "(선택)완료 예정 시간",

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Dyrynda\Database\Support\CascadeSoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -11,7 +10,6 @@ class Tag extends Model
 {
     use HasFactory;
     use SoftDeletes;
-    use CascadeSoftDeletes;
 
     public $default_color = '#ff6600';
 
@@ -23,16 +21,14 @@ class Tag extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $cascadeDeletes = ['tagToTasks'];
-
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function tagToTasks()
+    public function tasks()
     {
-        return $this->hasMany(TagToTask::class);
+        return $this->hasMany(Task::class);
     }
 
     public function replacePosition($user, $position, $delete = false)
