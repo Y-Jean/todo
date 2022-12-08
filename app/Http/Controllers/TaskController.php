@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tag;
-use App\Models\TagToTask;
 use App\Models\Task;
 use Carbon\Carbon;
 use Illuminate\Http\Request;

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\RoutineController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
@@ -82,6 +83,22 @@ Route::group(
                 Route::get('/{tag_id}', [TagController::class, 'show'])->where('tag_id', '[0-9]+');
                 // 태그 삭제
                 Route::delete('/{tag_id}', [TagController::class, 'destroy'])->where('tag_id', '[0-9]+');
+            });
+
+            /**
+             * 반복일정(루틴) 관련
+             */
+            Route::group(['prefix' => 'routines'], function () {
+                // 루틴 추가
+                Route::post('/', [RoutineController::class, 'store']);
+                // 루틴 수정
+                Route::put('/{routine_id}', [RoutineController::class, 'update'])->where('routine_id', '[0-9]+');
+                // 루틴 리스트
+                Route::get('/', [RoutineController::class, 'index']);
+                // 루틴 조회
+                Route::get('/{routine_id}', [RoutineController::class, 'show'])->where('routine_id', '[0-9]+');
+                // 루틴 삭제
+                Route::delete('/{routine_id}', [RoutineController::class, 'destroy'])->where('routine_id', '[0-9]+');
             });
         });
     }
