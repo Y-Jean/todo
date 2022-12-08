@@ -12,4 +12,6 @@ return [
     'do_not_exist_task' => '존재하지 않는 일정입니다.',
     'do_not_upsate_same_password' => '현재 비밀번호와 같은 비밀번호로는 변경할 수 없습니다.',
     'do_not_exist_tag' => '존재하지 않는 태그입니다.',
+    'enter_dates' => '날짜를 입력해주세요.',
+    'enter_days_of_week' => '요일을 입력해주세요.',
 ];

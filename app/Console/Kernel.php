@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Jobs\AssignRoutineScheduleJob;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -15,7 +16,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        // 루틴을 해당일의 일정으로 등록
+        $schedule->job(new AssignRoutineScheduleJob())->dailyAt('00:00');
     }
 
     /**
