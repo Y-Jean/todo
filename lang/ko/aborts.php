@@ -14,4 +14,7 @@ return [
     'do_not_exist_tag' => '존재하지 않는 태그입니다.',
     'enter_dates' => '날짜를 입력해주세요.',
     'enter_days_of_week' => '요일을 입력해주세요.',
+    'do_not_exist_routine' => '존재하지 않는 루틴입니다.',
+    'already_start_routine' => '시작일이 지나 시작일을 변경할 수 없습니다.',
+    'ended_routine' => '종료된 루틴은 수정할 수 없습니다.',
 ];

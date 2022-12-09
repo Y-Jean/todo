@@ -92,6 +92,229 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResponseAbort'
+  /api/v1/routines:
+    get:
+      tags:
+        - 루틴
+      summary: '루틴 리스트 조회'
+      description: '루틴 리스트 조회'
+      operationId: 6f4b99b6a840eac418ea0f6f4614f133
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                properties:
+                  routines: { description: '루틴 리스트', type: array, items: { properties: { id: { description: '루틴 번호', type: integer }, contents: { description: '일정 내용', type: string }, user_id: { description: '사용자 번호', type: integer }, type: { description: '월간(날짜기준)반복, 주간(요일기준)반복 구분', type: string, enum: [month, week] }, schedules: { description: '날짜, 요일 정보', properties: { dates: { description: '날짜 목록', type: array, items: { type: integer } }, days_of_week: { description: '요일 목록', type: array, items: { type: string, enum: [mon, tue, wed, thu, fri, sat, sun] } } }, type: object }, start_date: { description: '시작 일자', type: string }, end_date: { description: '종료 일자', type: string }, tags: { description: 태그, properties: { id: { description: '태그 번호', type: integer }, name: { description: '태그 이름', type: string }, position: { description: 우선순위, type: integer }, color: { description: '색깔 hexColor', type: string } }, type: object } }, type: object } }
+                type: object
+              example:
+                routines:
+                  - { id: 1, contents: '5일마다 할일', user_id: 11, type: month, schedules: { dates: [5, 10, 15, 20, 25, 30], days_of_week: [] }, tag_id: 3, start_date: '2022-12-09', end_date: '2022-12-20', tag: { id: 1, name: dolorum, position: 0, color: '#5f9d13' } }
+                  - { id: 7, contents: '월, 화요일에 할 일', user_id: 11, type: week, schedules: { dates: [], days_of_week: [mon, tue] }, tag_id: 1, start_date: '2022-12-09', end_date: null, tag: { id: 1, name: dolorum, position: 0, color: '#5f9d13' } }
+      security:
+        -
+          auth: []
+    post:
+      tags:
+        - 루틴
+      summary: '루틴 생성'
+      description: '새로운 루틴 생성'
+      operationId: 443061fe2238d4ba22520868adb2e505
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                contents:
+                  description: (필수)일정
+                  type: string
+                  example: 병원가기
+                start_date:
+                  description: '(필수)시작 일자(루틴을 시작할 일자)'
+                  type: string
+                  example: '2022-11-23'
+                end_date:
+                  description: '(선택)종료 일자'
+                  type: string
+                  example: '2022-11-23'
+                tag_id:
+                  description: '(선택)태그 번호'
+                  type: integer
+                  example: 1
+                type:
+                  description: '(필수)월간(날짜기준)반복, 주간(요일기준)반복 구분'
+                  type: string
+                  enum: [month, week]
+                  example: week
+                schedules:
+                  description: '(필수)날짜, 요일 정보'
+                  properties: { dates: { description: '(선택)날짜 목록', type: array, items: { type: integer, example: 1 } }, days_of_week: { description: '(선택)요일 목록', type: array, items: { type: string, enum: [mon, tue, wed, thu, fri, sat, sun], example: mon } } }
+                  type: object
+              type: object
+      responses:
+        '201':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                properties:
+                  result: { description: '성공 여부', type: string }
+                type: object
+              example:
+                result: success
+        '403':
+          description: '기타 오류'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseAbort'
+      security:
+        -
+          auth: []
+  '/api/v1/routines/{routine_id}':
+    get:
+      tags:
+        - 루틴
+      summary: '루틴 상세보기'
+      description: '루틴 개별 상세보기'
+      operationId: 90832662ebc4e90017545f8c9dfb09cf
+      parameters:
+        -
+          name: routine_id
+          in: path
+          description: '루틴 번호'
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                properties:
+                  id: { description: '루틴 번호', type: string }
+                  contents: { description: '루틴 내용', type: string }
+                  user_id: { description: '사용자 번호', type: integer }
+                  start_date: { description: '시작 일자', type: string }
+                  end_date: { description: '종료 일자', type: string }
+                  type: { description: '월간(날짜기준)반복, 주간(요일기준)반복 구분', type: string, enum: [month, week] }
+                  schedules: { description: '날짜, 요일 정보', properties: { dates: { description: '날짜 목록', type: array, items: { type: integer } }, days_of_week: { description: '요일 목록', type: array, items: { type: string, enum: [mon, tue, wed, thu, fri, sat, sun] } } }, type: object }
+                  tags: { description: 태그, properties: { id: { description: '태그 번호', type: integer }, name: { description: '태그 이름', type: string }, position: { description: 우선순위, type: integer }, color: { description: '색깔 hexColor', type: string } }, type: object }
+                type: object
+              example:
+                id: 1
+                contents: '오늘의 일정'
+                date: '2022-11-23'
+                done: false
+                dead_line: '2022-11-25T01:00:00.000000Z'
+                complete_time: null
+                tags:
+                  id: 1
+                  name: 운동
+                  position: 0
+                  color: '#5ac7ca'
+        '403':
+          description: '일정이 존재하지 않음'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseAbort'
+      security:
+        -
+          auth: []
+    put:
+      tags:
+        - 루틴
+      summary: '루틴 수정'
+      description: '기존 루틴 수정'
+      operationId: 989c168790a772e7aee0d0f88fdb568b
+      parameters:
+        -
+          name: routine_id
+          in: path
+          description: '루틴 번호'
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                start_date:
+                  description: '(필수)시작 일자(루틴을 시작할 일자)'
+                  type: string
+                  example: '2022-11-23'
+                end_date:
+                  description: '(선택)종료 일자'
+                  type: string
+                  example: '2022-11-23'
+                tag_id:
+                  description: '(선택)태그 번호'
+                  type: integer
+                  example: 1
+                type:
+                  description: '(필수)월간(날짜기준)반복, 주간(요일기준)반복 구분'
+                  type: string
+                  enum: [month, week]
+                  example: week
+                schedules:
+                  description: '(필수)날짜, 요일 정보'
+                  properties: { dates: { description: '(선택)날짜 목록', type: array, items: { type: integer, example: 1 } }, days_of_week: { description: '(선택)요일 목록', type: array, items: { type: string, enum: [mon, tue, wed, thu, fri, sat, sun], example: mon } } }
+                  type: object
+              type: object
+      responses:
+        '201':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                properties:
+                  result: { description: '성공 여부', type: string }
+                type: object
+              example:
+                result: success
+        '403':
+          description: '기타 오류'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseAbort'
+      security:
+        -
+          auth: []
+    delete:
+      tags:
+        - 루틴
+      summary: '루틴 삭제'
+      description: '루틴 개별 삭제'
+      operationId: e0971eda6d604355177970a8d59d61d4
+      parameters:
+        -
+          name: routine_id
+          in: path
+          description: '루틴 번호'
+          required: true
+          schema:
+            type: integer
+      responses:
+        '201':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                properties:
+                  result: { description: '성공 여부', type: string }
+                type: object
+              example:
+                result: success
+      security:
+        -
+          auth: []
   /api/v1/tags:
     get:
       tags:
@@ -432,6 +655,14 @@ paths:
       summary: '일정 수정'
       description: '기존 일정 수정'
       operationId: 262058e14947c763dc200ce0eb96544b
+      parameters:
+        -
+          name: task_id
+          in: path
+          description: '일정 번호'
+          required: true
+          schema:
+            type: integer
       requestBody:
         required: true
         content:
@@ -514,6 +745,14 @@ paths:
       summary: '일정 완료 등록'
       description: '기존 일정 완료/미완료 표기 변경'
       operationId: 0514dc358c55177d49e0cbda6acff643
+      parameters:
+        -
+          name: task_id
+          in: path
+          description: '일정 번호'
+          required: true
+          schema:
+            type: integer
       requestBody:
         required: true
         content:
