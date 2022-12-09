@@ -316,6 +316,15 @@ class TaskController extends Controller
      *      security={
      *          {"auth":{}}
      *      },
+     *      @OA\Parameter(
+     *          name="task_id",
+     *          in="path",
+     *          description="일정 번호",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
      *      @OA\RequestBody(
      *          required=true,
      *          @OA\JsonContent(
@@ -440,6 +449,15 @@ class TaskController extends Controller
      *      security={
      *          {"auth":{}}
      *      },
+     *      @OA\Parameter(
+     *          name="task_id",
+     *          in="path",
+     *          description="일정 번호",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
      *      @OA\RequestBody(
      *          required=true,
      *          @OA\JsonContent(

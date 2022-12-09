@@ -8,12 +8,6 @@ use Illuminate\Http\Request;
 class TagController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    /**
      * @OA\Get(
      *      path="/api/v1/tags",
      *      tags={"태그"},
@@ -88,12 +82,6 @@ class TagController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     /**
      * @OA\Post(
      *      path="/api/v1/tags",
@@ -171,14 +159,6 @@ class TagController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $v
-     * @param  int  $tag_id
-     * @return \Illuminate\Http\Response
-     */
-    /**
      * @OA\Get(
      *      path="/api/v1/tags/{tag_id}",
      *      tags={"태그"},
@@ -245,14 +225,6 @@ class TagController extends Controller
         return $tag->only(['id', 'name', 'position', 'color']);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $v
-     * @param  int  $tag_id
-     * @return \Illuminate\Http\Response
-     */
     /**
      * @OA\Put(
      *      path="/api/v1/tags/{tag_id}",
@@ -354,14 +326,6 @@ class TagController extends Controller
         ], 201);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $v
-     * @param  int  $tag_id
-     * @return \Illuminate\Http\Response
-     */
     /**
      * @OA\Delete(
      *      path="/api/v1/tags/{tag_id}",
