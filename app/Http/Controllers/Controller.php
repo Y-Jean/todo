@@ -36,6 +36,10 @@ use Illuminate\Routing\Controller as BaseController;
  *      name="태그",
  *      description="태그 관련 api"
  * )
+ * @OA\Tag(
+ *      name="루틴",
+ *      description="루틴 관련 api"
+ * )
  * @OA\Schema(
  *      schema="ResponseAbort",
  *      description="잘못된 요청",

@@ -105,7 +105,7 @@ class TaskTest extends TestCase
         $this->get($path, self::$user['token'])
             ->assertStatus(200)
             ->assertJsonStructure([
-                'id', 'contents', 'date', 'done', 'dead_line', 'complete_time', 'tags'
+                'id', 'contents', 'date', 'done', 'dead_line', 'complete_time', 'tag'
             ]);
     }
 
