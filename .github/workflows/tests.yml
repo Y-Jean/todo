@@ -44,7 +44,7 @@ jobs:
     - name: Generate key
       run: php artisan key:generate
     - name: Generate jwt token keys
-      run:
+      run: |
         openssl ecparam -name prime256v1 -genkey -noout -out storage/keys/jwtES256.key
         openssl ec -in storage/keys/jwtES256.key -pubout -out storage/keys/jwtES256.key.pem
     - name: Directory Permissions
