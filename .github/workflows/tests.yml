@@ -29,8 +29,12 @@ jobs:
       redis:
         image: redis
         ports:
-          - 6379/tcp
-        options: --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=3
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping" 
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
     - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
@@ -49,6 +53,8 @@ jobs:
         openssl ec -in storage/keys/jwtES256.key -pubout -out storage/keys/jwtES256.key.pem
     - name: Directory Permissions
       run: chmod -R 777 storage bootstrap/cache
+    - name: Clear Config
+      run: php artisan config:clear
     - name: Database Setup
       run: php artisan migrate:fresh --seed
     - name: Execute tests (Unit and Feature tests) via PHPUnit
