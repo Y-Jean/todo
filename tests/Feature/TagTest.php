@@ -32,11 +32,10 @@ class TagTest extends TestCase
             ->assertStatus(201)
             ->assertJson(['result'=>'success']);
 
-        $tag = Tag::firstWhere('user_id', self::$user['user_id']);
+        $tag = Tag::where('user_id', self::$user['user_id'])->latest('id')->first();
 
         self::assertSame($tag->name, '운동');
         self::assertSame($tag->color, $hex);
-        self::assertSame($tag->position, 0);
     }
 
     /**
@@ -53,6 +52,7 @@ class TagTest extends TestCase
         $this->put($path, [
             'name' => '학습',
             'color' => $hex,
+            'position' => 0
         ], self::$user['token'])
             ->assertStatus(201)
             ->assertJson(['result'=>'success']);
@@ -76,7 +76,7 @@ class TagTest extends TestCase
             'user_id' => self::$user['user_id'],
             'position' => $position++
         ]);
-        (new Tag)->resetPosition(self::$user['user_id']);
+        (new Tag())->resetPosition(self::$user['user_id']);
 
         $path = 'api/v1/tags/' . $tag->id;
         $this->get($path, self::$user['token'])

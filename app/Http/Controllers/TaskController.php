@@ -182,22 +182,22 @@ class TaskController extends Controller
             $endDate = $date->copy()->endOfMonth()->toDateString();
         }
 
-        $tasks = Task::leftjoin('tags', function ($join){
-                        $join->on('tags.id', '=', 'tasks.tag_id')
-                            ->whereNull('tags.deleted_at');
-                    })
-                    ->whereBetween('tasks.date', [$startDate, $endDate])
-                    ->where('tasks.user_id', $user->id)
-                    ->when($tag_ids->isNotEmpty(), function ($query) use ($tag_ids) {
-                        $query->whereIn('tasks.tag_id', $tag_ids);
-                    })
-                    ->orderBy('tasks.date')
-                    ->orderBy('tags.position')
-                    ->select([
-                        'tasks.id', 'tasks.contents', 'tasks.done', 'tasks.dead_line', 'tasks.complete_time', 'tasks.date', 'tasks.tag_id',
-                        'tags.name as tag_name', 'tags.position', 'tags.color'
-                    ])
-                    ->get();
+        $tasks = Task::leftjoin('tags', function ($join) {
+            $join->on('tags.id', '=', 'tasks.tag_id')
+                ->whereNull('tags.deleted_at');
+        })
+        ->whereBetween('tasks.date', [$startDate, $endDate])
+        ->where('tasks.user_id', $user->id)
+        ->when($tag_ids->isNotEmpty(), function ($query) use ($tag_ids) {
+            $query->whereIn('tasks.tag_id', $tag_ids);
+        })
+        ->orderBy('tasks.date')
+        ->orderBy('tags.position')
+        ->select([
+            'tasks.id', 'tasks.contents', 'tasks.done', 'tasks.dead_line', 'tasks.complete_time',
+            'tasks.date', 'tasks.tag_id', 'tags.name as tag_name', 'tags.position', 'tags.color'
+        ])
+        ->get();
 
         return response()->json([
             'start_date' => $startDate,
@@ -285,7 +285,7 @@ class TaskController extends Controller
         $date = $request->input('date');
         // 태그 아이디
         $tag_id = $request->input('tag_id');
-        $deadLine = $request->input('dead_line') !== null ? Carbon::createFromFormat('Y-m-d H:i:s', $request->input('dead_line')) : null;
+        $deadLine = $request->input('dead_line');
 
         // 내용이 비었을 경우
         if ($contents === '') {
@@ -402,7 +402,7 @@ class TaskController extends Controller
         $date = $request->input('date');
         // 태그 아이디
         $tag_id = $request->input('tag_id');
-        $deadLine = $request->input('dead_line') !== null ? Carbon::createFromFormat('Y-m-d H:i:s', $request->input('dead_line')) : null;
+        $deadLine = $request->input('dead_line');
         $done = $request->input('done');
 
         // 내용이 비었을 경우
