@@ -170,7 +170,7 @@ class UserController extends Controller
         $token = $request->bearerToken();
         if ($token !== null) {
             $publicKey = Storage::disk('local')->get(config('constants.jwt.KEY_PUBLIC'));
-    
+
             $explodedToken = explode('.', $token);
             if (count($explodedToken) !== 3) {
                 abort(410, __('aborts.token_is_not_valid'));
@@ -382,7 +382,7 @@ class UserController extends Controller
         $password = $request->input('new_password');
 
         // 비밀번호가 일치하지 않을 경우
-        if (!Hash::check($oldPassword, $user->password)){
+        if (!Hash::check($oldPassword, $user->password)) {
             abort(403, __('aborts.do_not_match_password'));
         }
 

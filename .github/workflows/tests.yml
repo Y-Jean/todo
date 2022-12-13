@@ -43,12 +43,10 @@ jobs:
     - uses: actions/checkout@v3
     - name: Copy .env
       run: cp .env.testing .env
-    - name: Check PSR-12
-      uses: docker://oskarstark/php-cs-fixer-ga
-      with:
-        args: --config=.php-cs-fixer.dist.php --dry-run
     - name: Install Dependencies
       run: composer install -q
+    - name: Execute Code Sniffer via phpcs
+      run: vendor/bin/phpcs --standard=PSR12 app --report=summary
     - name: Generate key
       run: php artisan key:generate
     - name: Generate jwt token keys

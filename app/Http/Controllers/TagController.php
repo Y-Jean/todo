@@ -149,7 +149,7 @@ class TagController extends Controller
             'name' => $name
         ]);
         $tag->color = $color !== null ? $color : $tag->default_color;
-        $tag->position = $lastTag !== null ? $lastTag->position+1 : 0;
+        $tag->position = $lastTag !== null ? $lastTag->position + 1 : 0;
 
         $user->tags()->save($tag);
 
