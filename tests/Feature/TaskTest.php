@@ -2,8 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\Tag;
-use App\Models\Task;
+use App\Models\{Tag, Task};
 use Carbon\Carbon;
 use Tests\TestCase;
 
@@ -32,12 +31,12 @@ class TaskTest extends TestCase
             'user_id' => self::$user['user_id'],
             'position' => $position
         ]);
-        (new Tag)->resetPosition(self::$user['user_id']);
+        (new Tag())->resetPosition(self::$user['user_id']);
 
         $this->post('api/v1/tasks', [
             'contents' => '오늘의 일정입니다.',
             'date' => Carbon::now()->toDateString(),
-            'tag_ids' => [$tag->id]
+            'tag_id' => $tag->id
         ], self::$user['token'])
             ->assertStatus(201)
             ->assertJson(['result'=>'success']);

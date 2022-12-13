@@ -482,6 +482,12 @@ class RoutineController extends Controller
      *          required=true,
      *          @OA\JsonContent(
      *              @OA\Property(
+     *                  property="contents",
+     *                  type="string",
+     *                  description="(필수)일정",
+     *                  example="병원가기"
+     *              ),
+     *              @OA\Property(
      *                  property="start_date",
      *                  type="string",
      *                  description="(필수)시작 일자(루틴을 시작할 일자)",
@@ -556,6 +562,7 @@ class RoutineController extends Controller
     public function update(Request $request, $v, $routine_id)
     {
         $this->validate($request, [
+            'contents' => 'required|string',
             'tag_id' => 'integer|min:0',
             'start_date' => 'required|date|date_format:Y-m-d',
             'end_date' => 'nullable|date|date_format:Y-m-d|after_or_equal:start_date|after:now',
@@ -572,6 +579,8 @@ class RoutineController extends Controller
         // 사용자 정보
         $user = $request->get('user');
 
+        // 일정 내용
+        $contents = $request->input('contents');
         // 태그 아이디
         $tag_id = $request->input('tag_id');
         // 날짜
@@ -589,6 +598,10 @@ class RoutineController extends Controller
         if ($routine->start_date !== $startDate && $routine->start_date <= Carbon::now()->toDateString()) {
             abort(403, __('aborts.already_start_routine'));
         }
+        // 시작일 이후면 내용 변경 불가
+        if ($routine->start_date <= Carbon::now()->toDateString() && $routine->contents !== $contents) {
+            abort(403, __('aborts.already_start_routine'));
+        }
         // 종료일 이후면 루틴 변경 불가
         if ($routine->end_date !== null && $routine->end_date <= Carbon::now()->toDateString()) {
             abort(403, __('aborts.ended_routine'));
@@ -596,7 +609,7 @@ class RoutineController extends Controller
 
         if ($tag_id === null) {
             $routine->tag_id = null;
-        } else if ($routine->tag_id !== $tag_id) {
+        } elseif ($routine->tag_id !== $tag_id) {
             $tag = Tag::where('user_id', $user->id)->find($tag_id);
             if ($tag !== null) {
                 $routine->tag_id = $tag->id;
@@ -610,6 +623,7 @@ class RoutineController extends Controller
             abort(403, __('aborts.enter_days_of_week'));
         }
 
+        $routine->contents = $contents;
         $routine->start_date = $startDate;
         $routine->end_date = $endDate;
         $routine->type = $type;
@@ -617,7 +631,6 @@ class RoutineController extends Controller
             'dates' => $schedules['dates'] !== null && $type === 'month' ? $schedules['dates'] : [],
             'days_of_week' => $schedules['days_of_week'] !== null && $type === 'week' ? $schedules['days_of_week'] : [],
         ];
-        $routine->tag_id = $tag !== null ? $tag->id : null;
         $routine->save();
 
         return response()->json([

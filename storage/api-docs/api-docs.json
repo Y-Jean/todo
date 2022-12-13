@@ -596,6 +596,11 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
+                                    "contents": {
+                                        "description": "(필수)일정",
+                                        "type": "string",
+                                        "example": "병원가기"
+                                    },
                                     "start_date": {
                                         "description": "(필수)시작 일자(루틴을 시작할 일자)",
                                         "type": "string",
