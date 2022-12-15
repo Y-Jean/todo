@@ -405,6 +405,8 @@ class TaskController extends Controller
         $deadLine = $request->input('dead_line');
         $done = $request->input('done');
 
+        $now = Carbon::now();
+
         // 내용이 비었을 경우
         if ($contents === '') {
             abort(403, __('aborts.do_not_exist_contents'));
@@ -420,17 +422,33 @@ class TaskController extends Controller
 
         $task->contents = $contents;
         $task->date = $date;
+        /**
+         * 완료 기한이 지났을 경우 기한 변경 불가
+         */
+        if (
+            $task->dead_line !== null && $now->gte($task->dead_line) &&
+            ($deadLine === null || ($deadLine !== null && $task->dead_line->ToDateTimeString() !== $deadLine))
+        ) {
+            abort(403, __('aborts.dead_line_is_over'));
+        }
         $task->dead_line = $deadLine;
         if ($done !== null) {
             $done = filter_var($done, FILTER_VALIDATE_BOOLEAN);
-            // 일정 미완료에서 완료로 바뀌는 경우 완료 시간 등록
-            if ($task->done !== $done && $done) {
-                $task->complete_time = Carbon::now();
-            } elseif ($task->done !== $done && !$done) {
-                $task->complete_time = null;
-            }
+            if ($task->done !== $done) {
+                // 사용자 옵션 확인
+                if (!$user->option->done_after_dead_line && $task->dead_line !== null && $now->gte($task->dead_line)) {
+                    abort(403, __('aborts.dead_line_is_over'));
+                }
 
-            $task->done = $done;
+                if ($done) {
+                    // 일정 미완료에서 완료로 바뀌는 경우 완료 시간 등록
+                    $task->complete_time = Carbon::now();
+                } else {
+                    $task->complete_time = null;
+                }
+
+                $task->done = $done;
+            }
         }
         $task->tag_id = $tag !== null ? $tag->id : null;
         $task->save();
@@ -503,6 +521,8 @@ class TaskController extends Controller
 
         $done = filter_var($request->input('done'), FILTER_VALIDATE_BOOLEAN);
 
+        $now = Carbon::now();
+
         $task = Task::where('user_id', $user->id)
                     ->whereId($task_id)
                     ->first();
@@ -511,12 +531,20 @@ class TaskController extends Controller
             abort(403, __('aborts.do_not_exist_task'));
         }
 
-        // 일정 미완료에서 완료로 바뀌는 경우 완료 시간 등록
-        if ($task->done !== $done && $done) {
-            $task->complete_time = Carbon::now();
-        } elseif ($task->done !== $done && !$done) {
-            $task->complete_time = null;
+        if ($task->done !== $done) {
+            // 사용자 옵션 확인
+            if (!$user->option->done_after_dead_line && $task->dead_line !== null && $now->gte($task->dead_line)) {
+                abort(403, __('aborts.dead_line_is_over'));
+            }
+
+            if ($done) {
+                // 일정 미완료에서 완료로 바뀌는 경우 완료 시간 등록
+                $task->complete_time = Carbon::now();
+            } else {
+                $task->complete_time = null;
+            }
         }
+
         $task->done = $done;
         $task->save();
 

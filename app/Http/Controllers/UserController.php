@@ -368,7 +368,11 @@ class UserController extends Controller
     {
         $this->validate($request, [
             'current_password' => 'required',
-            'new_password' => 'required|confirmed|regex:/(?=.*\d{1,})(?=.*[~`!@#$%\^&*()-+=]{1,})(?=.*[a-zA-Z]{2,}).{8,16}$/',
+            'new_password' => [
+                'required',
+                'confirmed',
+                'regex:/(?=.*\d{1,})(?=.*[~`!@#$%\^&*()-+=]{1,})(?=.*[a-zA-Z]{2,}).{8,16}$/'
+            ],
             'new_password_confirmation' => 'required'
         ], [
             'new_password.*' => __('validations.password'),

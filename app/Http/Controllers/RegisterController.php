@@ -75,7 +75,12 @@ class RegisterController extends Controller
         $this->validate($request, [
             'name' => 'required|string|max:100',
             'email' => 'required|string|max:100|email',
-            'password' => 'required|required_with:password_confirmation|same:password_confirmation|regex:/(?=.*\d{1,})(?=.*[~`!@#$%\^&*()-+=]{1,})(?=.*[a-zA-Z]{2,}).{8,16}$/',
+            'password' => [
+                'required',
+                'required_with:password_confirmation',
+                'same:password_confirmation',
+                'regex:/(?=.*\d{1,})(?=.*[~`!@#$%\^&*()-+=]{1,})(?=.*[a-zA-Z]{2,}).{8,16}$/'
+            ],
             'password_confirmation' => 'required'
         ], [
             'name.*' => __('validations.email'),
