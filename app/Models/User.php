@@ -45,4 +45,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Tag::class);
     }
+
+    public function option()
+    {
+        return $this->hasOne(Option::class);
+    }
 }

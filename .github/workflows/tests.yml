@@ -46,7 +46,7 @@ jobs:
     - name: Install Dependencies
       run: composer install -q
     - name: Execute Code Sniffer via phpcs
-      run: vendor/bin/phpcs --standard=PSR12 app --report=summary -n
+      run: vendor/bin/phpcs --standard=PSR12 app --report=summary
     - name: Generate key
       run: php artisan key:generate
     - name: Generate jwt token keys
