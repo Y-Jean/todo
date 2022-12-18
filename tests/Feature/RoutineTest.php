@@ -134,5 +134,6 @@ class RoutineTest extends TestCase
         self::$routine->refresh();
 
         self::assertNotNull(self::$routine->deleted_at);
+        self::assertSoftDeleted(self::$routine);
     }
 }

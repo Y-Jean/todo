@@ -121,5 +121,10 @@ class TaskTest extends TestCase
         $this->delete($path, [], self::$user['token'])
             ->assertStatus(201)
             ->assertJson(['result'=>'success']);
+
+        $task->refresh();
+
+        self::assertNotNull($task->deleted_at);
+        self::assertSoftDeleted($task);
     }
 }
