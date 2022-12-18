@@ -117,5 +117,10 @@ class TagTest extends TestCase
         $this->delete($path, [], self::$user['token'])
             ->assertStatus(201)
             ->assertJson(['result'=>'success']);
+
+        $tag->refresh();
+
+        self::assertNotNull($tag->deleted_at);
+        self::assertSoftDeleted($tag);
     }
 }
