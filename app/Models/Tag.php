@@ -31,6 +31,11 @@ class Tag extends Model
         return $this->hasMany(Task::class);
     }
 
+    public function routines()
+    {
+        return $this->hasMany(Routine::class);
+    }
+
     public function replacePosition($user, $position, $delete = false)
     {
         // 태그가 삭제되는 경우, 뒷번호를 앞으로 옮기고 return
