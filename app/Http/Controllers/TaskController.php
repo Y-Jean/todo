@@ -207,6 +207,243 @@ class TaskController extends Controller
     }
 
     /**
+     * @OA\Get(
+     *      path="/api/v1/tags/list?period={period}&date={date}",
+     *      tags={"알정"},
+     *      summary="전체 일정 리스트 조회",
+     *      description="정체 일정의 리스트 조회",
+     *      security={
+     *          {"auth":{}}
+     *      },
+     *      @OA\Parameter(
+     *          name="per_page",
+     *          in="path",
+     *          description="한 페이지 조회 갯수",
+     *          required=false,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="per_page",
+     *          in="path",
+     *          description="페이지 번호",
+     *          required=false,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="sort_by_column",
+     *          in="path",
+     *          description="정렬 기준(기본: date)",
+     *          required=false,
+     *          @OA\Schema(
+     *              type="string",
+     *              enum={"position", "date", "contents", "name", "done", "dead_line", "complete_time"},
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="direction",
+     *          in="path",
+     *          description="정렬 순서(기본: desc)",
+     *          required=false,
+     *          @OA\Schema(
+     *              type="string",
+     *              enum={"asc", "desc"},
+     *          )
+     *      ),
+     *      @OA\Parameter(
+     *          name="tag_ids",
+     *          in="path",
+     *          description="태그 번호",
+     *          required=false,
+     *          @OA\Schema(
+     *              type="array",
+     *              @OA\Items()
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response="200",
+     *          description="성공",
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="total",
+     *                  type="integer",
+     *                  description="전체 갯수"
+     *              ),
+     *              @OA\Property(
+     *                  property="per_page",
+     *                  type="integer",
+     *                  description="페이지 당 갯수"
+     *              ),
+     *              @OA\Property(
+     *                  property="page",
+     *                  type="integer",
+     *                  description="페이지 번호"
+     *              ),
+     *              @OA\Property(
+     *                  property="from",
+     *                  type="integer",
+     *                  description="시작 아이템"
+     *              ),
+     *              @OA\Property(
+     *                  property="to",
+     *                  type="integer",
+     *                  description="마지막 아이템"
+     *              ),
+     *              @OA\Property(
+     *                  property="tasks",
+     *                  type="array",
+     *                  description="일정 리스트",
+     *                  @OA\Items(
+     *                      type="object",
+     *                      @OA\Property(
+     *                          property="id",
+     *                          type="integer",
+     *                          description="일정 번호"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="contents",
+     *                          type="string",
+     *                          description="일정 내용"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="done",
+     *                          type="boolean",
+     *                          description="완료 여부"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="dead_line",
+     *                          type="string",
+     *                          description="기한"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="complete_time",
+     *                          type="string",
+     *                          description="완료 시간"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="date",
+     *                          type="string",
+     *                          description="날짜"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="tag_id",
+     *                          type="string",
+     *                          description="태그 번호"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="tag_name",
+     *                          type="string",
+     *                          description="태그 이름"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="position",
+     *                          type="integer",
+     *                          description="우선순위"
+     *                      ),
+     *                      @OA\Property(
+     *                          property="color",
+     *                          type="string",
+     *                          description="hexColor"
+     *                      )
+     *                  )
+     *              ),
+     *              example={
+     *                  "total": 57,
+     *                  "per_page": 10,
+     *                  "page": 2,
+     *                  "from": 11,
+     *                  "to": 20,
+     *                  "tags": {
+     *                      {
+     *                          "id": 1,
+     *                          "contents": "오늘의 할일",
+     *                          "done": false,
+     *                          "dead_line": "2022-12-10T01:00:00.000000Z",
+     *                          "complete_time": null,
+     *                          "date": "2022-12-05",
+     *                          "tag_id": 3,
+     *                          "tag_name": "운동",
+     *                          "position": 1,
+     *                          "color": "#355921"
+     *                      },
+     *                      {
+     *                          "id": 7,
+     *                          "contents": "12월 8일의 할일",
+     *                          "done": true,
+     *                          "dead_line": null,
+     *                          "complete_time": null,
+     *                          "date": "2022-12-08",
+     *                          "tag_id": 2,
+     *                          "tag_name": "어학",
+     *                          "position": 0,
+     *                          "color": "#70b0eb"
+     *                      }
+     *                  }
+     *              }
+     *          )
+     *      )
+     * )
+     */
+    public function listOfTasks(Request $request)
+    {
+        $this->validate($request, [
+            'per_page' => 'nullable|integer|max:50',
+            'page' => 'nullable|integer',
+            'sort_by_column' => 'nullable|string|in:position,date,contents,name,done,dead_line,complete_time',
+            'direction' => 'nullable|string|in:asc,desc',
+            'tag_ids' => 'nullable|array',
+            'tag_ids.*' => 'integer|min:0'
+        ], [
+            '*' => __('validations.format')
+        ]);
+
+        // 사용자 정보
+        $user = $request->get('user');
+
+        $tag_ids = collect($request->input('tag_ids'))->unique();
+        $perPage = $request->input('per_page') !== null ? intval($request->input('per_page')) : 10;
+        $page = $request->input('page') !== null ? intval($request->input('page')) : 1;
+        $sortByColumn = $request->input('sort_by_column') !== null ? $request->input('sort_by_column') : 'date';
+        $direction = $request->input('direction') !== null ? $request->input('direction') : 'desc';
+
+        // orderBy 칼럼 이름 정리
+        if (in_array($sortByColumn, ['date', 'done', 'contents', 'dead_line', 'complete_time'])) {
+            $sortByColumn = 'tasks.' . $sortByColumn;
+        } else {
+            $sortByColumn = 'tags.' . $sortByColumn;
+        }
+
+        $tasks = Task::leftjoin('tags', function ($join) {
+            $join->on('tags.id', '=', 'tasks.tag_id')
+                ->whereNull('tags.deleted_at');
+        })
+        ->where('tasks.user_id', $user->id)
+        ->when($tag_ids->isNotEmpty(), function ($query) use ($tag_ids) {
+            $query->whereIn('tasks.tag_id', $tag_ids);
+        })
+        ->orderBy($sortByColumn, $direction)
+        ->orderBy('tags.position')
+        ->orderBy('tasks.date', 'desc')
+        ->select([
+            'tasks.id', 'tasks.contents', 'tasks.done', 'tasks.dead_line', 'tasks.complete_time',
+            'tasks.date', 'tasks.tag_id', 'tags.name as tag_name', 'tags.position', 'tags.color'
+        ])
+        ->paginate($perPage);
+
+        return response()->json([
+            'total' => $tasks->total(),
+            'per_page' => $perPage,
+            'page' => $page,
+            'from' => $tasks->firstItem(),
+            'to' => $tasks->lastItem(),
+            'tasks' => $tasks->items()
+        ]);
+    }
+
+    /**
      * @OA\Post(
      *      path="/api/v1/tasks",
      *      tags={"일정"},
