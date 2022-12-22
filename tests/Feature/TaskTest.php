@@ -92,6 +92,45 @@ class TaskTest extends TestCase
     }
 
     /**
+     * 단위기간별 일정 목록 조회 테스트
+     *
+     * @return void
+     */
+    public function test_get_tasks()
+    {
+        $path = 'api/v1/tasks?period=month&date=' . Carbon::now()->addDay()->toDateString();
+        $this->get($path, self::$user['token'])
+            ->assertStatus(200)
+            ->assertJsonStructure([
+                'start_date', 'end_date',
+                'tasks' => [
+                    '*' => [
+                        'id', 'contents', 'date', 'done', 'dead_line', 'complete_time', 'tag_id', 'tag_name', 'position', 'color'
+                    ]
+                ]
+            ]);
+    }
+
+    /**
+     * 전체 일정 목록 조회 테스트
+     *
+     * @return void
+     */
+    public function test_get_list_of_tasks()
+    {
+        $this->get('api/v1/tasks/list', self::$user['token'])
+            ->assertStatus(200)
+            ->assertJsonStructure([
+                'total', 'per_page', 'page', 'from', 'to',
+                'tasks' => [
+                    '*' => [
+                        'id', 'contents', 'date', 'done', 'dead_line', 'complete_time', 'tag_id', 'tag_name', 'position', 'color'
+                    ]
+                ]
+            ]);
+    }
+
+    /**
      * 일정 개별 조회 테스트
      *
      * @return void
