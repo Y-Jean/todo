@@ -10,6 +10,10 @@
          stopOnFailure="false">
 >
     <testsuites>
+        <testsuite name="Feature">
+            <directory suffix="Test.php">./tests/Feature</directory>
+        </testsuite>
+
         <testsuite name="Controller Test Suite">
             <directory suffix="Test.php">./tests/Unit/Controllers</directory>
         </testsuite>
@@ -18,13 +22,13 @@
             <directory suffix="Test.php">./tests/Unit/Models</directory>
         </testsuite>
 
-        <testsuite name="Feature">
-            <directory suffix="Test.php">./tests/Feature</directory>
+        <testsuite name="Job Test Suite">
+            <directory suffix="Test.php">./tests/Unit/Jobs</directory>
         </testsuite>
 
-        <!-- <testsuite name="Unit">
-            <directory suffix="Test.php">./tests/Unit</directory>
-        </testsuite> -->
+        <testsuite name="Migration Test Suite">
+            <directory suffix="Test.php">./tests/Unit/Migration</directory>
+        </testsuite>
     </testsuites>
     <coverage processUncoveredFiles="true">
         <include>
