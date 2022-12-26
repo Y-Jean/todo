@@ -15,7 +15,7 @@ class TaskController extends Controller
     /**
      * @OA\Get(
      *      path="/api/v1/tags?period={period}&date={date}",
-     *      tags={"알정"},
+     *      tags={"일정"},
      *      summary="단위기간별 일정 조회",
      *      description="일간, 주간 월간 단위기간별 일정 조회",
      *      security={
@@ -209,7 +209,7 @@ class TaskController extends Controller
     /**
      * @OA\Get(
      *      path="/api/v1/tags/list?period={period}&date={date}",
-     *      tags={"알정"},
+     *      tags={"일정"},
      *      summary="전체 일정 리스트 조회",
      *      description="정체 일정의 리스트 조회",
      *      security={
