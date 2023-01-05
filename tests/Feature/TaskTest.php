@@ -80,7 +80,7 @@ class TaskTest extends TestCase
         $task = Task::firstWhere('user_id', self::$user['user_id']);
 
         $path = 'api/v1/tasks/' . $task->id . '/done';
-        $this->put($path, [
+        $this->patch($path, [
             'done' => true
         ], self::$user['token'])
             ->assertStatus(201)

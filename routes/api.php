@@ -66,7 +66,7 @@ Route::group(
                 // 일정 조회 (리스트)
                 Route::get('/list', [TaskController::class, 'listOfTasks']);
                 // 일정 완료여부 수정
-                Route::put('/{task_id}/done', [TaskController::class, 'updateDone'])->where('task_id', '[0-9]+');
+                Route::patch('/{task_id}/done', [TaskController::class, 'updateDone'])->where('task_id', '[0-9]+');
                 // 일정 상세보기
                 Route::get('/{task_id}', [TaskController::class, 'show'])->where('task_id', '[0-9]+');
                 // 일정 삭제

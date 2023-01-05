@@ -1738,13 +1738,13 @@
             }
         },
         "/api/v1/tasks/{task_id}/done": {
-            "put": {
+            "patch": {
                 "tags": [
                     "일정"
                 ],
                 "summary": "일정 완료 등록",
                 "description": "기존 일정 완료/미완료 표기 변경",
-                "operationId": "0514dc358c55177d49e0cbda6acff643",
+                "operationId": "20f62fe890de962c591b821506fc3c47",
                 "parameters": [
                     {
                         "name": "task_id",
