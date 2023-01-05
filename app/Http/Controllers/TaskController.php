@@ -696,7 +696,7 @@ class TaskController extends Controller
     }
 
     /**
-     * @OA\Put(
+     * @OA\Patch(
      *      path="/api/v1/tasks/{task_id}/done",
      *      tags={"일정"},
      *      summary="일정 완료 등록",
