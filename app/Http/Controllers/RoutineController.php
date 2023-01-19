@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\RefeatType;
 use App\Models\Tag;
 use App\Models\Routine;
 use Carbon\Carbon;
@@ -295,10 +296,10 @@ class RoutineController extends Controller
             $tag = Tag::where('user_id', $user->id)->find($tag_id);
         }
 
-        if ($type === 'month' && (empty($schedules['dates']) || $schedules['dates'] === null)) {
+        if ($type === RefeatType::Month && (empty($schedules['dates']) || $schedules['dates'] === null)) {
             abort(403, __('aborts.enter_dates'));
         }
-        if ($type === 'week' && (empty($schedules['days_of_week']) || $schedules['days_of_week'] === null)) {
+        if ($type === RefeatType::Week && (empty($schedules['days_of_week']) || $schedules['days_of_week'] === null)) {
             abort(403, __('aborts.enter_days_of_week'));
         }
 
@@ -309,8 +310,8 @@ class RoutineController extends Controller
         $routine->end_date = $endDate;
         $routine->type = $type;
         $routine->schedules = [
-            'dates' => $schedules['dates'] !== null && $type === 'month' ? $schedules['dates'] : [],
-            'days_of_week' => $schedules['days_of_week'] !== null && $type === 'week' ? $schedules['days_of_week'] : [],
+            'dates' => $type === RefeatType::Month ? $schedules['dates'] : [],
+            'days_of_week' => $type === RefeatType::Week ? $schedules['days_of_week'] : [],
         ];
         $routine->tag_id = $tag !== null ? $tag->id : null;
         $routine->save();
@@ -616,10 +617,10 @@ class RoutineController extends Controller
             }
         }
 
-        if ($type === 'month' && (empty($schedules['dates']) || $schedules['dates'] === null)) {
+        if ($type === RefeatType::Month && (empty($schedules['dates']) || $schedules['dates'] === null)) {
             abort(403, __('aborts.enter_dates'));
         }
-        if ($type === 'week' && (empty($schedules['days_of_week']) || $schedules['days_of_week'] === null)) {
+        if ($type === RefeatType::Week && (empty($schedules['days_of_week']) || $schedules['days_of_week'] === null)) {
             abort(403, __('aborts.enter_days_of_week'));
         }
 
@@ -628,8 +629,8 @@ class RoutineController extends Controller
         $routine->end_date = $endDate;
         $routine->type = $type;
         $routine->schedules = [
-            'dates' => $schedules['dates'] !== null && $type === 'month' ? $schedules['dates'] : [],
-            'days_of_week' => $schedules['days_of_week'] !== null && $type === 'week' ? $schedules['days_of_week'] : [],
+            'dates' => $type === RefeatType::Month ? $schedules['dates'] : [],
+            'days_of_week' => $type === RefeatType::Week ? $schedules['days_of_week'] : [],
         ];
         $routine->save();
 
