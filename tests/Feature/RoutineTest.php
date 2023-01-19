@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\RefeatType;
 use App\Models\{Routine, Tag};
 use Carbon\Carbon;
 use Tests\TestCase;
@@ -53,7 +54,7 @@ class RoutineTest extends TestCase
         self::assertSame(self::$routine->contents, '매주 월요일, 수요일마다 반복되는 일정입니다.');
         self::assertSame(self::$routine->start_date, Carbon::now()->addDay()->toDateString());
         self::assertSame(self::$routine->end_date, Carbon::now()->addMonth()->toDateString());
-        self::assertSame(self::$routine->type, 'week');
+        self::assertSame(self::$routine->type, RefeatType::Week);
     }
 
     /**
@@ -80,7 +81,7 @@ class RoutineTest extends TestCase
 
         self::assertSame(self::$routine->contents, '5, 10일 마다 반복되는 일정입니다.');
         self::assertSame(self::$routine->start_date, Carbon::now()->addDays(3)->toDateString());
-        self::assertSame(self::$routine->type, 'month');
+        self::assertSame(self::$routine->type, RefeatType::Month);
     }
 
     /**
